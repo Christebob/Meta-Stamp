@@ -3,6 +3,7 @@ import { ContentLibrary } from '@/components/ContentLibrary';
 import { RevenueChart } from '@/components/RevenueChart';
 import { AchievementBadges } from '@/components/AchievementBadges';
 import { LiveNotifications } from '@/components/LiveNotifications';
+import { VideoWatermarking } from '@/components/VideoWatermarking';
 import { Sparkles, Zap, TrendingUp } from 'lucide-react';
 
 const Index = () => {
@@ -35,6 +36,11 @@ const Index = () => {
               <span>Achievement rewards</span>
             </div>
           </div>
+        </div>
+
+        {/* Video Watermarking System */}
+        <div className="mb-8">
+          <VideoWatermarking />
         </div>
 
         {/* Earnings Counter */}
