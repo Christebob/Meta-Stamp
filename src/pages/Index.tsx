@@ -4,6 +4,7 @@ import { RevenueChart } from '@/components/RevenueChart';
 import { AchievementBadges } from '@/components/AchievementBadges';
 import { LiveNotifications } from '@/components/LiveNotifications';
 import { VideoWatermarking } from '@/components/VideoWatermarking';
+import { AIDetectionNetwork } from '@/components/AIDetectionNetwork';
 import { Sparkles, Zap, TrendingUp } from 'lucide-react';
 
 const Index = () => {
@@ -41,6 +42,11 @@ const Index = () => {
         {/* Video Watermarking System */}
         <div className="mb-8">
           <VideoWatermarking />
+        </div>
+
+        {/* AI Detection Network */}
+        <div className="mb-8">
+          <AIDetectionNetwork />
         </div>
 
         {/* Earnings Counter */}
