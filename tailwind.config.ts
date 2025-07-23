@@ -71,6 +71,18 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				}
 			},
+			backgroundImage: {
+				'gradient-creator': 'var(--gradient-creator)',
+				'gradient-success': 'var(--gradient-success)',
+				'gradient-analytics': 'var(--gradient-analytics)',
+				'gradient-bg': 'var(--gradient-bg)',
+			},
+			boxShadow: {
+				'creator': 'var(--shadow-creator)',
+				'success': 'var(--shadow-success)',
+				'card': 'var(--shadow-card)',
+				'elevated': 'var(--shadow-elevated)',
+			},
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',

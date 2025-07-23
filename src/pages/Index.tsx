@@ -11,30 +11,39 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-background/80 p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center space-x-2 mb-4">
-            <Sparkles className="w-8 h-8 text-primary" />
-            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary via-secondary to-electric bg-clip-text text-transparent">
-              AI Royalty Tracker
-            </h1>
-            <Zap className="w-8 h-8 text-electric" />
-          </div>
-          <p className="text-xl text-muted-foreground mb-2">
-            Watch your creative work generate passive income through AI usage
-          </p>
-          <div className="flex items-center justify-center space-x-4 text-sm text-muted-foreground">
-            <div className="flex items-center space-x-1">
-              <TrendingUp className="w-4 h-4 text-success" />
-              <span>Real-time tracking</span>
-            </div>
-            <div className="flex items-center space-x-1">
-              <Zap className="w-4 h-4 text-electric" />
-              <span>Instant notifications</span>
-            </div>
-            <div className="flex items-center space-x-1">
-              <Sparkles className="w-4 h-4 text-primary" />
-              <span>Achievement rewards</span>
+        {/* Creator Studio Header */}
+        <div className="text-center mb-12">
+          <div className="relative mb-6">
+            <div className="absolute inset-0 bg-gradient-creator rounded-lg blur-xl opacity-20"></div>
+            <div className="relative bg-card border border-border rounded-lg p-8 shadow-elevated">
+              <div className="flex items-center justify-center space-x-3 mb-4">
+                <div className="w-12 h-12 bg-gradient-creator rounded-xl flex items-center justify-center">
+                  <Sparkles className="w-6 h-6 text-white" />
+                </div>
+                <h1 className="text-5xl md:text-6xl font-bold bg-gradient-creator bg-clip-text text-transparent">
+                  Creator Studio
+                </h1>
+                <div className="w-12 h-12 bg-gradient-analytics rounded-xl flex items-center justify-center">
+                  <TrendingUp className="w-6 h-6 text-white" />
+                </div>
+              </div>
+              <p className="text-xl text-muted-foreground mb-4">
+                Your AI royalty command center - track earnings, protect content, build your empire
+              </p>
+              <div className="flex items-center justify-center space-x-6 text-sm">
+                <div className="flex items-center space-x-2 bg-success/10 text-success px-3 py-2 rounded-full">
+                  <TrendingUp className="w-4 h-4" />
+                  <span className="font-medium">Live Analytics</span>
+                </div>
+                <div className="flex items-center space-x-2 bg-electric/10 text-electric px-3 py-2 rounded-full">
+                  <Zap className="w-4 h-4" />
+                  <span className="font-medium">AI Protection</span>
+                </div>
+                <div className="flex items-center space-x-2 bg-primary/10 text-primary px-3 py-2 rounded-full">
+                  <Sparkles className="w-4 h-4" />
+                  <span className="font-medium">Smart Rewards</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
