@@ -5,6 +5,7 @@ import { AchievementBadges } from '@/components/AchievementBadges';
 import { LiveNotifications } from '@/components/LiveNotifications';
 import { VideoWatermarking } from '@/components/VideoWatermarking';
 import { AIDetectionNetwork } from '@/components/AIDetectionNetwork';
+import BlockchainSetup from '@/components/BlockchainSetup';
 import { Sparkles, Zap, TrendingUp } from 'lucide-react';
 
 const Index = () => {
@@ -56,6 +57,11 @@ const Index = () => {
         {/* AI Detection Network */}
         <div className="mb-8">
           <AIDetectionNetwork />
+        </div>
+
+        {/* Blockchain Watermark Registry */}
+        <div className="mb-8">
+          <BlockchainSetup />
         </div>
 
         {/* Earnings Counter */}
