@@ -7,7 +7,7 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Upload, Shield, Search, Download, CheckCircle, AlertCircle, Link, ExternalLink } from 'lucide-react';
+import { Upload, Shield, Search, Download, CheckCircle, AlertCircle, Link, ExternalLink, Bot, Clock, Hash } from 'lucide-react';
 import { toast } from 'sonner';
 
 // Extend Window interface for MetaMask
@@ -25,6 +25,16 @@ interface WatermarkData {
   blockchainTxHash?: string;
 }
 
+interface AIUsageLog {
+  id: string;
+  watermarkId: string;
+  aiModel: string;
+  extractionType: string;
+  duration: number;
+  timestamp: number;
+  txHash?: string;
+}
+
 export const VideoWatermarking = () => {
   const [uploadedVideo, setUploadedVideo] = useState<File | null>(null);
   const [watermarkedVideo, setWatermarkedVideo] = useState<Blob | null>(null);
@@ -32,6 +42,8 @@ export const VideoWatermarking = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [detectionVideo, setDetectionVideo] = useState<File | null>(null);
+  const [aiUsageLogs, setAiUsageLogs] = useState<AIUsageLog[]>([]);
+  const [isSimulating, setIsSimulating] = useState(false);
   
   // Blockchain integration
   const [web3, setWeb3] = useState<Web3 | null>(null);
@@ -48,6 +60,18 @@ export const VideoWatermarking = () => {
     {
       "inputs": [{"internalType": "string", "name": "_watermarkId", "type": "string"}],
       "name": "logWatermark",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {"internalType": "string", "name": "_watermarkId", "type": "string"},
+        {"internalType": "string", "name": "_aiModel", "type": "string"},
+        {"internalType": "string", "name": "_extractionType", "type": "string"},
+        {"internalType": "uint256", "name": "_duration", "type": "uint256"}
+      ],
+      "name": "logAIUsage",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -128,6 +152,80 @@ export const VideoWatermarking = () => {
     } catch (error) {
       console.error("Blockchain logging failed:", error);
       return null;
+    }
+  };
+
+  // Log AI usage to blockchain
+  const logAIUsageToBlockchain = async (usageLog: AIUsageLog): Promise<string | null> => {
+    if (!contract || !account) return null;
+    
+    try {
+      const tx = await contract.methods.logAIUsage(
+        usageLog.watermarkId,
+        usageLog.aiModel,
+        usageLog.extractionType,
+        usageLog.duration
+      ).send({
+        from: account
+      });
+      return tx.transactionHash;
+    } catch (error) {
+      console.error("AI usage logging failed:", error);
+      return null;
+    }
+  };
+
+  // Simulate AI extracting content from watermarked video
+  const simulateAIExtraction = async () => {
+    // First check if we have any watermarked content
+    const storedWatermarks = Object.keys(localStorage).filter(key => key.startsWith('watermark-'));
+    if (storedWatermarks.length === 0) {
+      toast.error("No watermarked content found. Please watermark a video first.");
+      return;
+    }
+
+    setIsSimulating(true);
+    
+    try {
+      // Get the latest watermark
+      const latestWatermarkKey = storedWatermarks[storedWatermarks.length - 1];
+      const watermarkData = JSON.parse(localStorage.getItem(latestWatermarkKey) || '{}');
+      
+      // Simulate AI processing
+      toast.info("Simulating Claude AI extracting 10-second clip...");
+      
+      // Create AI usage log
+      const usageLog: AIUsageLog = {
+        id: crypto.randomUUID(),
+        watermarkId: watermarkData.id,
+        aiModel: "Claude-3.5-Sonnet",
+        extractionType: "Video Clip Extraction",
+        duration: 10, // 10 seconds
+        timestamp: Date.now()
+      };
+
+      // Simulate processing time
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Log to blockchain if connected
+      if (contract && account) {
+        toast.info("Logging AI usage to blockchain...");
+        const txHash = await logAIUsageToBlockchain(usageLog);
+        if (txHash) {
+          usageLog.txHash = txHash;
+          toast.success("AI usage logged to blockchain!");
+        }
+      }
+
+      // Add to local logs
+      setAiUsageLogs(prev => [usageLog, ...prev]);
+      
+      toast.success("AI extraction detected and logged!");
+      
+    } catch (error) {
+      toast.error("Failed to simulate AI extraction");
+    } finally {
+      setIsSimulating(false);
     }
   };
 
@@ -416,7 +514,7 @@ export const VideoWatermarking = () => {
       )}
 
       <Tabs defaultValue="watermark" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="watermark" className="flex items-center gap-2">
             <Upload className="w-4 h-4" />
             Watermark Videos
@@ -424,6 +522,10 @@ export const VideoWatermarking = () => {
           <TabsTrigger value="detect" className="flex items-center gap-2">
             <Search className="w-4 h-4" />
             Detect Usage
+          </TabsTrigger>
+          <TabsTrigger value="simulate" className="flex items-center gap-2">
+            <Bot className="w-4 h-4" />
+            AI Simulation
           </TabsTrigger>
         </TabsList>
 
@@ -583,6 +685,93 @@ export const VideoWatermarking = () => {
                           <div className="text-sm space-y-1">
                             <p><span className="font-medium">Creator:</span> {watermark.creatorId}</p>
                             <p><span className="font-medium">Signature:</span> {watermark.signature}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="simulate" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>AI Content Extraction Simulation</CardTitle>
+              <CardDescription>
+                Simulate an AI like Claude extracting content from your watermarked videos
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="border-2 border-dashed border-blue-200 rounded-lg p-8 text-center bg-blue-50/50">
+                <Bot className="w-12 h-12 mx-auto mb-4 text-blue-500" />
+                <div className="space-y-2">
+                  <h3 className="text-lg font-medium">Simulate AI Touch</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Test how your watermarked content is detected when used by AI models
+                  </p>
+                  <Button 
+                    onClick={simulateAIExtraction}
+                    disabled={isSimulating}
+                    className="mt-4"
+                  >
+                    {isSimulating ? "Simulating..." : "Simulate Claude AI Extraction"}
+                  </Button>
+                </div>
+              </div>
+
+              {/* AI Usage Logs */}
+              {aiUsageLogs.length > 0 && (
+                <Card className="bg-red-50 dark:bg-red-950">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center gap-2 mb-4">
+                      <AlertCircle className="w-5 h-5 text-red-500" />
+                      <span className="font-medium text-red-700 dark:text-red-300">
+                        AI Usage Detected & Logged
+                      </span>
+                    </div>
+                    <div className="space-y-3 max-h-64 overflow-y-auto">
+                      {aiUsageLogs.map((log) => (
+                        <div key={log.id} className="bg-background p-4 rounded-lg border">
+                          <div className="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                              <p className="font-medium text-red-600">AI Model</p>
+                              <p className="text-muted-foreground">{log.aiModel}</p>
+                            </div>
+                            <div>
+                              <p className="font-medium text-red-600">Extraction Type</p>
+                              <p className="text-muted-foreground">{log.extractionType}</p>
+                            </div>
+                            <div>
+                              <p className="font-medium text-red-600">Duration</p>
+                              <p className="text-muted-foreground">{log.duration} seconds</p>
+                            </div>
+                            <div>
+                              <p className="font-medium text-red-600">Timestamp</p>
+                              <p className="text-muted-foreground">{new Date(log.timestamp).toLocaleString()}</p>
+                            </div>
+                          </div>
+                          <div className="mt-3 pt-3 border-t">
+                            <div className="flex items-center gap-2 text-xs">
+                              <Hash className="w-3 h-3" />
+                              <span className="font-mono">Watermark: {log.watermarkId.slice(0, 8)}...</span>
+                            </div>
+                            {log.txHash && (
+                              <div className="flex items-center gap-2 text-xs mt-1">
+                                <Link className="w-3 h-3" />
+                                <span className="font-mono text-green-600">Blockchain: {log.txHash.slice(0, 16)}...</span>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-6 px-2 text-xs"
+                                  onClick={() => window.open(`https://sepolia.etherscan.io/tx/${log.txHash}`, '_blank')}
+                                >
+                                  <ExternalLink className="w-3 h-3" />
+                                </Button>
+                              </div>
+                            )}
                           </div>
                         </div>
                       ))}
