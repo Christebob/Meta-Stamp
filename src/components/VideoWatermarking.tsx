@@ -1,18 +1,28 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
+import Web3 from 'web3';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Upload, Shield, Search, Download, CheckCircle, AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Upload, Shield, Search, Download, CheckCircle, AlertCircle, Link, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
+
+// Extend Window interface for MetaMask
+declare global {
+  interface Window {
+    ethereum?: any;
+  }
+}
 
 interface WatermarkData {
   id: string;
   creatorId: string;
   timestamp: number;
   signature: string;
+  blockchainTxHash?: string;
 }
 
 export const VideoWatermarking = () => {
@@ -23,19 +33,113 @@ export const VideoWatermarking = () => {
   const [progress, setProgress] = useState(0);
   const [detectionVideo, setDetectionVideo] = useState<File | null>(null);
   
+  // Blockchain integration
+  const [web3, setWeb3] = useState<Web3 | null>(null);
+  const [account, setAccount] = useState<string>('');
+  const [isConnected, setIsConnected] = useState(false);
+  const [contract, setContract] = useState<any>(null);
+  
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const detectionVideoRef = useRef<HTMLVideoElement>(null);
+
+  // Smart contract ABI for watermark logging
+  const contractABI = [
+    {
+      "inputs": [{"internalType": "string", "name": "_watermarkId", "type": "string"}],
+      "name": "logWatermark",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ];
+
+  // Auto-connect wallet on component mount
+  useEffect(() => {
+    if (typeof window.ethereum !== 'undefined') {
+      window.ethereum.request({ method: 'eth_accounts' })
+        .then((accounts: string[]) => {
+          if (accounts.length > 0) {
+            const web3Instance = new Web3(window.ethereum);
+            setWeb3(web3Instance);
+            setAccount(accounts[0]);
+            setIsConnected(true);
+            // Try to connect to existing contract if available
+            const savedContract = localStorage.getItem('watermark-contract-address');
+            if (savedContract) {
+              const contractInstance = new web3Instance.eth.Contract(contractABI, savedContract);
+              setContract(contractInstance);
+            }
+          }
+        });
+    }
+  }, []);
+
+  // Connect wallet function
+  const connectWallet = async () => {
+    try {
+      if (typeof window.ethereum !== 'undefined') {
+        const web3Instance = new Web3(window.ethereum);
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+        
+        // Switch to Sepolia
+        try {
+          await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: '0xaa36a7' }],
+          });
+        } catch (switchError: any) {
+          if (switchError.code === 4902) {
+            await window.ethereum.request({
+              method: 'wallet_addEthereumChain',
+              params: [{
+                chainId: '0xaa36a7',
+                chainName: 'Sepolia Test Network',
+                nativeCurrency: { name: 'SepoliaETH', symbol: 'ETH', decimals: 18 },
+                rpcUrls: ['https://sepolia.infura.io/v3/'],
+                blockExplorerUrls: ['https://sepolia.etherscan.io']
+              }]
+            });
+          }
+        }
+
+        const accounts = await web3Instance.eth.getAccounts();
+        setWeb3(web3Instance);
+        setAccount(accounts[0]);
+        setIsConnected(true);
+        toast.success("Wallet connected for blockchain watermarking");
+      } else {
+        toast.error("MetaMask required for blockchain features");
+      }
+    } catch (error) {
+      toast.error("Failed to connect wallet");
+    }
+  };
+
+  // Log watermark to blockchain
+  const logToBlockchain = async (watermarkId: string): Promise<string | null> => {
+    if (!contract || !account) return null;
+    
+    try {
+      const tx = await contract.methods.logWatermark(watermarkId).send({
+        from: account
+      });
+      return tx.transactionHash;
+    } catch (error) {
+      console.error("Blockchain logging failed:", error);
+      return null;
+    }
+  };
 
   // Generate unique watermark signature
   const generateWatermark = useCallback((): WatermarkData => {
     return {
       id: crypto.randomUUID(),
-      creatorId: 'creator-' + Math.random().toString(36).substr(2, 9),
+      creatorId: account || 'creator-' + Math.random().toString(36).substr(2, 9),
       timestamp: Date.now(),
       signature: btoa(crypto.randomUUID() + Date.now()).slice(0, 16)
     };
-  }, []);
+  }, [account]);
 
   // Embed invisible watermark into video frames
   const embedWatermark = useCallback(async (videoFile: File): Promise<Blob> => {
@@ -188,16 +292,36 @@ export const VideoWatermarking = () => {
     try {
       // Simulate progress
       const progressInterval = setInterval(() => {
-        setProgress(prev => Math.min(prev + 10, 90));
+        setProgress(prev => Math.min(prev + 5, 70));
       }, 200);
 
       const watermarkedBlob = await embedWatermark(uploadedVideo);
+      
+      setProgress(75);
+      
+      // If blockchain connected, log the watermark
+      let blockchainTxHash = null;
+      if (contract && account) {
+        toast.info("Logging watermark to blockchain...");
+        const watermarkData = JSON.parse(localStorage.getItem(`watermark-${(watermarkedBlob as any).watermarkId}`) || '{}');
+        blockchainTxHash = await logToBlockchain(watermarkData.id);
+        if (blockchainTxHash) {
+          // Update stored watermark with blockchain hash
+          watermarkData.blockchainTxHash = blockchainTxHash;
+          localStorage.setItem(`watermark-${watermarkData.id}`, JSON.stringify(watermarkData));
+          toast.success("Watermark logged to blockchain!");
+        }
+      }
       
       clearInterval(progressInterval);
       setProgress(100);
       setWatermarkedVideo(watermarkedBlob);
       
-      toast.success('Video successfully watermarked!');
+      if (blockchainTxHash) {
+        toast.success('Video watermarked and logged to blockchain!');
+      } else {
+        toast.success('Video successfully watermarked!');
+      }
     } catch (error) {
       toast.error('Failed to watermark video: ' + (error as Error).message);
     } finally {
@@ -257,12 +381,39 @@ export const VideoWatermarking = () => {
           <CardTitle className="flex items-center gap-2">
             <Shield className="w-5 h-5 text-primary" />
             AI Content Tracking System
+            {isConnected && <Badge variant="outline" className="ml-auto"><Link className="w-3 h-3 mr-1" />Blockchain Ready</Badge>}
           </CardTitle>
           <CardDescription>
             Stamp your videos with invisible watermarks to track AI usage and ensure fair compensation
           </CardDescription>
         </CardHeader>
       </Card>
+
+      {/* Blockchain Connection Status */}
+      {!isConnected && (
+        <Alert>
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            <div className="flex items-center justify-between">
+              <span>Connect wallet to enable blockchain watermark logging</span>
+              <Button size="sm" onClick={connectWallet}>
+                Connect Wallet
+              </Button>
+            </div>
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {isConnected && !contract && (
+        <Alert className="border-yellow-200 bg-yellow-50">
+          <AlertCircle className="h-4 w-4 text-yellow-600" />
+          <AlertDescription>
+            <span className="text-yellow-800">
+              Wallet connected but no smart contract found. Watermarks will be created locally only.
+            </span>
+          </AlertDescription>
+        </Alert>
+      )}
 
       <Tabs defaultValue="watermark" className="space-y-6">
         <TabsList className="grid w-full grid-cols-2">
