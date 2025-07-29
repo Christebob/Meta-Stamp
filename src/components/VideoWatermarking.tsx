@@ -482,7 +482,7 @@ export const VideoWatermarking = () => {
             {isConnected && <Badge variant="outline" className="ml-auto"><Link className="w-3 h-3 mr-1" />Blockchain Ready</Badge>}
           </CardTitle>
           <CardDescription>
-            Stamp your videos with invisible watermarks to track AI usage and ensure fair compensation
+            Stamp your videos with invisible meta-stamps to track AI usage and ensure fair compensation
           </CardDescription>
         </CardHeader>
       </Card>

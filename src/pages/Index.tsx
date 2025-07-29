@@ -21,7 +21,7 @@ const Index = () => {
                   <Sparkles className="w-6 h-6 text-white" />
                 </div>
                 <h1 className="text-5xl md:text-6xl font-bold bg-gradient-creator bg-clip-text text-transparent">
-                  Creator Studio
+                  Meta-Stamp
                 </h1>
                 <div className="w-12 h-12 bg-gradient-analytics rounded-xl flex items-center justify-center">
                   <TrendingUp className="w-6 h-6 text-white" />

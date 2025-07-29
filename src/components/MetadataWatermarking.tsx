@@ -155,10 +155,10 @@ const MetadataWatermarking = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <FileVideo className="h-5 w-5" />
-            Metadata Watermarking
+            Metadata AI Tracking
           </CardTitle>
           <CardDescription>
-            Embed invisible watermarks in video metadata using FFmpeg-compatible methods
+            Embed invisible meta-stamps in video metadata using FFmpeg-compatible methods
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -200,7 +200,7 @@ const MetadataWatermarking = () => {
               disabled={!selectedFile || isProcessing}
               className="w-full"
             >
-              {isProcessing ? "Processing..." : "Embed Watermark"}
+              {isProcessing ? "Processing..." : "Embed AI Tracking"}
             </Button>
 
             {isProcessing && (
@@ -208,7 +208,7 @@ const MetadataWatermarking = () => {
                 <Label>Processing Progress</Label>
                 <Progress value={progress} className="w-full" />
                 <p className="text-sm text-muted-foreground text-center">
-                  Embedding metadata watermark... {Math.round(progress)}%
+                  Embedding metadata AI tracking... {Math.round(progress)}%
                 </p>
               </div>
             )}
@@ -220,11 +220,11 @@ const MetadataWatermarking = () => {
               <CheckCircle className="h-4 w-4 text-green-600" />
               <AlertDescription>
                 <div className="space-y-3">
-                  <p className="font-medium text-green-800">Watermark Successfully Embedded!</p>
+                  <p className="font-medium text-green-800">AI Tracking Successfully Embedded!</p>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
                     <div className="space-y-1">
-                      <Label className="text-green-700">Watermark ID</Label>
+                      <Label className="text-green-700">Tracking ID</Label>
                       <Badge variant="secondary" className="font-mono text-xs">
                         {watermarkData.id}
                       </Badge>
@@ -261,7 +261,7 @@ const MetadataWatermarking = () => {
             <div className="flex items-center gap-4 pt-4 border-t">
               <Button onClick={handleDownload} className="flex-1">
                 <Download className="h-4 w-4 mr-2" />
-                Download Watermarked Video
+                Download Meta-Stamped Video
               </Button>
               <Button onClick={resetUpload} variant="outline">
                 Process Another Video
@@ -276,7 +276,7 @@ const MetadataWatermarking = () => {
               <div className="space-y-2">
                 <p className="font-medium">FFmpeg Compatibility</p>
                 <p className="text-sm">
-                  This module embeds watermarks in video metadata fields that persist through:
+                  This module embeds meta-stamps in video metadata fields that persist through:
                 </p>
                 <ul className="text-sm space-y-1 ml-4">
                   <li>• Standard video compression (H.264, H.265, VP9)</li>
