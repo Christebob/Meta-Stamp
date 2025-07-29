@@ -5,6 +5,7 @@ import { AchievementBadges } from '@/components/AchievementBadges';
 import { LiveNotifications } from '@/components/LiveNotifications';
 import { VideoWatermarking } from '@/components/VideoWatermarking';
 import { AIDetectionNetwork } from '@/components/AIDetectionNetwork';
+import { PlatformUploader } from '@/components/PlatformUploader';
 import { Sparkles, Zap, TrendingUp } from 'lucide-react';
 
 const Index = () => {
@@ -46,6 +47,11 @@ const Index = () => {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Platform Uploader */}
+        <div className="mb-8">
+          <PlatformUploader />
         </div>
 
         {/* Video Watermarking System */}
