@@ -29,7 +29,7 @@ const Index = () => {
                 </div>
               </div>
               <p className="text-xl text-muted-foreground mb-6">
-                Watermark your content and get paid when AI devours it
+                Watermark your content and get paid every time AI touches your work. Re-upload now and plug in to the future of commerce.
               </p>
               <div className="mb-6 space-y-2">
                 <p className="text-lg font-semibold text-electric italic">
