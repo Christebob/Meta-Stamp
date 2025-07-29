@@ -1,4 +1,5 @@
 import { EarningsCounter } from '@/components/EarningsCounter';
+import { EarningsTicker } from '@/components/EarningsTicker';
 import { ContentLibrary } from '@/components/ContentLibrary';
 import { RevenueChart } from '@/components/RevenueChart';
 import { AchievementBadges } from '@/components/AchievementBadges';
@@ -11,7 +12,10 @@ import { Sparkles, Zap, TrendingUp } from 'lucide-react';
 const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-background/80 p-4 md:p-8">
-      <div className="max-w-7xl mx-auto">
+      {/* Live Earnings Ticker */}
+      <EarningsTicker userName="Chris Coyne" />
+      
+      <div className="max-w-7xl mx-auto pt-20">
         {/* Creator Studio Header */}
         <div className="text-center mb-12">
           <div className="relative mb-6">
@@ -29,16 +33,8 @@ const Index = () => {
                 </div>
               </div>
               <p className="text-xl text-muted-foreground mb-6">
-                Watermark your content and get paid every time AI touches your work. Re-upload now and plug in to the future of commerce.
+                Watermark your content and get paid every time AI touches your work.
               </p>
-              <div className="mb-6 space-y-2">
-                <p className="text-lg font-semibold text-electric italic">
-                  "Because sometimes you need to take what you're worth"
-                </p>
-                <p className="text-lg font-semibold text-primary italic">
-                  "Own your impact. Claim your cut."
-                </p>
-              </div>
               <div className="flex items-center justify-center space-x-6 text-sm">
                 <div className="flex items-center space-x-2 bg-success/10 text-success px-3 py-2 rounded-full">
                   <TrendingUp className="w-4 h-4" />
@@ -100,6 +96,14 @@ const Index = () => {
           <p className="text-muted-foreground">
             Empowering artists with fair AI compensation since 2024
           </p>
+          <div className="mt-4 space-y-1">
+            <p className="text-sm font-semibold text-electric italic">
+              "Because sometimes you need to take what you're worth"
+            </p>
+            <p className="text-sm font-semibold text-primary italic">
+              "Own your impact. Claim your cut."
+            </p>
+          </div>
         </div>
       </div>
     </div>

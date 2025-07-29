@@ -428,7 +428,7 @@ export const PlatformUploader = () => {
       <CardContent className="space-y-6">
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="upload">📹 Upload New Content</TabsTrigger>
+            <TabsTrigger value="upload">🚀 Re-upload now and plug into the future of commerce</TabsTrigger>
             <TabsTrigger value="import">💰 Import & Re-Upload with Confidence</TabsTrigger>
           </TabsList>
           
