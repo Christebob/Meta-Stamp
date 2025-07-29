@@ -28,9 +28,17 @@ const Index = () => {
                   <TrendingUp className="w-6 h-6 text-white" />
                 </div>
               </div>
-              <p className="text-xl text-muted-foreground mb-4">
+              <p className="text-xl text-muted-foreground mb-6">
                 Your AI royalty command center - track earnings, protect content, build your empire
               </p>
+              <div className="mb-6 space-y-2">
+                <p className="text-lg font-semibold text-electric italic">
+                  "Because sometimes you need to take what you're worth"
+                </p>
+                <p className="text-lg font-semibold text-primary italic">
+                  "Own your impact. Claim your cut."
+                </p>
+              </div>
               <div className="flex items-center justify-center space-x-6 text-sm">
                 <div className="flex items-center space-x-2 bg-success/10 text-success px-3 py-2 rounded-full">
                   <TrendingUp className="w-4 h-4" />
