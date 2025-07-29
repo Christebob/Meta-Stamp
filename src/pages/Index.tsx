@@ -29,7 +29,7 @@ const Index = () => {
                 </div>
               </div>
               <p className="text-xl text-muted-foreground mb-6">
-                Your AI royalty command center - track earnings, protect content, build your empire
+                Watermark your content and get paid when AI devours it
               </p>
               <div className="mb-6 space-y-2">
                 <p className="text-lg font-semibold text-electric italic">
