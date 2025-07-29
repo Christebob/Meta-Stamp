@@ -20,7 +20,10 @@ import {
   Globe,
   Eye,
   Clock,
-  Zap
+  Zap,
+  PlayCircle,
+  Tv,
+  Radio
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -49,6 +52,24 @@ const platforms: Platform[] = [
     color: 'text-red-500',
     maxSize: 256000, // 256GB
     supportedFormats: ['mp4', 'mov', 'avi', 'wmv', 'flv', 'webm'],
+    requiresAuth: true
+  },
+  {
+    id: 'beasttube',
+    name: 'BeastTube',
+    icon: <PlayCircle className="w-5 h-5" />,
+    color: 'text-purple-500',
+    maxSize: 500000, // 500GB
+    supportedFormats: ['mp4', 'mov', 'avi', 'wmv', 'flv', 'webm', 'mkv'],
+    requiresAuth: true
+  },
+  {
+    id: 'metahub',
+    name: 'Meta Hub',
+    icon: <Tv className="w-5 h-5" />,
+    color: 'text-blue-600',
+    maxSize: 100000, // 100GB
+    supportedFormats: ['mp4', 'mov', 'avi', 'webm'],
     requiresAuth: true
   },
   {
@@ -85,6 +106,15 @@ const platforms: Platform[] = [
     color: 'text-blue-600',
     maxSize: 500000, // 500GB
     supportedFormats: ['mp4', 'mov', 'avi', 'wmv', 'flv'],
+    requiresAuth: true
+  },
+  {
+    id: 'rumble',
+    name: 'Rumble',
+    icon: <Radio className="w-5 h-5" />,
+    color: 'text-green-600',
+    maxSize: 50000, // 50GB
+    supportedFormats: ['mp4', 'mov', 'avi', 'wmv'],
     requiresAuth: true
   }
 ];
@@ -260,19 +290,20 @@ export const PlatformUploader = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Upload className="w-5 h-5 text-primary" />
-          Meta-Stamp Platform Uploader
-          <Badge variant="outline" className="ml-auto">Auto-Protected</Badge>
+          🚀 Upload & Protect Your Content
+          <Badge variant="outline" className="ml-auto bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0">Rebel-Protected</Badge>
         </CardTitle>
         <CardDescription>
-          Upload your videos to any platform with automatic Meta-Stamp AI tracking protection
+          Upload your videos anywhere without letting corporate AI steal your ideas for free! 
+          Automatic Meta-Stamp protection ensures you get paid when they use your content.
         </CardDescription>
       </CardHeader>
       
       <CardContent className="space-y-6">
         {/* Platform Selection */}
         <div className="space-y-3">
-          <Label>Select Platform</Label>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+          <Label className="text-lg font-semibold">🎯 Pick Your Platform (Don't let them win!)</Label>
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
             {platforms.map((platform) => (
               <Button
                 key={platform.id}
@@ -290,11 +321,13 @@ export const PlatformUploader = () => {
           </div>
           
           {selectedPlatform && (
-            <Alert>
-              <AlertCircle className="h-4 w-4" />
+            <Alert className="border-orange-200 bg-orange-50">
+              <AlertCircle className="h-4 w-4 text-orange-600" />
               <AlertDescription>
-                <strong>{selectedPlatform.name} requirements:</strong> Max {selectedPlatform.maxSize}MB, 
+                <strong>🎪 {selectedPlatform.name} specs:</strong> Max {selectedPlatform.maxSize}MB, 
                 Formats: {selectedPlatform.supportedFormats.join(', ')}
+                {selectedPlatform.id === 'beasttube' && <span className="block text-sm mt-1 text-purple-600">🔥 Next-gen creator platform - unlimited potential!</span>}
+                {selectedPlatform.id === 'metahub' && <span className="block text-sm mt-1 text-blue-600">🌟 Creator-first community - built by us, for us!</span>}
               </AlertDescription>
             </Alert>
           )}
@@ -302,19 +335,19 @@ export const PlatformUploader = () => {
 
         {/* File Upload */}
         <div className="space-y-3">
-          <Label>Select Video File</Label>
+          <Label className="text-lg font-semibold">📹 Drop Your Masterpiece Here</Label>
           <div 
             className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center cursor-pointer hover:border-primary/50 transition-colors"
             onClick={() => fileInputRef.current?.click()}
           >
             <Upload className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
             <p className="text-lg font-medium text-foreground mb-2">
-              {selectedFile ? selectedFile.name : 'Click to upload video'}
+              {selectedFile ? `🎬 ${selectedFile.name}` : '🎯 Upload your content here to protect it from corporate appropriation'}
             </p>
             <p className="text-sm text-muted-foreground">
               {selectedPlatform 
-                ? `Supports: ${selectedPlatform.supportedFormats.join(', ')} (max ${selectedPlatform.maxSize}MB)`
-                : 'Select a platform first to see requirements'
+                ? `Ready for ${selectedPlatform.name}: ${selectedPlatform.supportedFormats.join(', ')} (max ${selectedPlatform.maxSize}MB)`
+                : 'Pick a platform first, then we\'ll show you what they accept'
               }
             </p>
             <Input
@@ -329,27 +362,27 @@ export const PlatformUploader = () => {
 
         {/* Video Metadata */}
         {selectedFile && selectedPlatform && (
-          <div className="space-y-4 p-4 border rounded-lg bg-muted/20">
-            <h3 className="font-semibold">Video Details</h3>
+          <div className="space-y-4 p-4 border rounded-lg bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200">
+            <h3 className="font-semibold">📝 Make it Legendary (Your call, your content)</h3>
             
             <div className="space-y-2">
-              <Label htmlFor="title">Title *</Label>
+              <Label htmlFor="title">🏆 Title * (Make it count!)</Label>
               <Input
                 id="title"
                 value={metadata.title}
                 onChange={(e) => setMetadata(prev => ({ ...prev, title: e.target.value }))}
-                placeholder="Enter video title"
+                placeholder="Your masterpiece deserves a killer title..."
                 disabled={isProcessing}
               />
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description">📖 Tell Your Story</Label>
               <Textarea
                 id="description"
                 value={metadata.description}
                 onChange={(e) => setMetadata(prev => ({ ...prev, description: e.target.value }))}
-                placeholder="Enter video description"
+                placeholder="What makes this content uniquely yours? Let the world know..."
                 rows={3}
                 disabled={isProcessing}
               />
@@ -357,18 +390,18 @@ export const PlatformUploader = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="tags">Tags (comma separated)</Label>
+                <Label htmlFor="tags">🏷️ Tags (Help rebels find you)</Label>
                 <Input
                   id="tags"
                   value={metadata.tags}
                   onChange={(e) => setMetadata(prev => ({ ...prev, tags: e.target.value }))}
-                  placeholder="tag1, tag2, tag3"
+                  placeholder="creator, original, protected, rebel, authentic..."
                   disabled={isProcessing}
                 />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="visibility">Visibility</Label>
+                <Label htmlFor="visibility">👁️ Who Gets to See This?</Label>
                 <Select 
                   value={metadata.visibility} 
                   onValueChange={(value) => setMetadata(prev => ({ ...prev, visibility: value as any }))}
@@ -473,12 +506,12 @@ export const PlatformUploader = () => {
         </div>
 
         {/* Info Alert */}
-        <Alert>
-          <Shield className="h-4 w-4" />
+        <Alert className="border-purple-200 bg-gradient-to-r from-purple-50 to-pink-50">
+          <Shield className="h-4 w-4 text-purple-600" />
           <AlertDescription>
-            <strong>Meta-Stamp Protection:</strong> Every video uploaded through this tool automatically 
-            receives invisible AI tracking stamps. You'll be notified and compensated whenever 
-            AI models use your content.
+            <strong>🛡️ Meta-Stamp Rebel Protection:</strong> Every video uploaded through this tool gets 
+            invisible AI tracking stamps. When corporate AI tries to steal your content, you'll know 
+            about it AND get compensated. Fight back against the machine! 🤖💪
           </AlertDescription>
         </Alert>
       </CardContent>
