@@ -349,7 +349,7 @@ export const PlatformUploader = () => {
       const randomDuration = Math.floor(Math.random() * 26) + 5; // 5-30 seconds
       const earnings = randomDuration * 0.15;
 
-      // Insert into ai_usage_logs using raw supabase client
+      // Insert into ai_usage_logs
       const { error: logError } = await (supabase as any)
         .from('ai_usage_logs')
         .insert([{
