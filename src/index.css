@@ -6,44 +6,44 @@
 
 @layer base {
   :root {
-    /* Futuristic Light Theme Color Palette */
-    --background: 255 255 255; /* Pure white */
-    --foreground: 29 29 31; /* Dark gray text */
+    /* Futuristic Light Theme Color Palette - HSL Format */
+    --background: 0 0% 100%; /* Pure white */
+    --foreground: 210 2% 11%; /* Dark gray text */
     
-    --card: 255 255 255;
-    --card-foreground: 29 29 31;
+    --card: 0 0% 100%;
+    --card-foreground: 210 2% 11%;
     
-    --popover: 255 255 255;
-    --popover-foreground: 29 29 31;
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 2% 11%;
     
-    /* Soft blue accent */
-    --primary: 0 122 255;
-    --primary-foreground: 255 255 255;
+    /* Blue slate accent - muted */
+    --primary: 215 20% 45%;
+    --primary-foreground: 0 0% 100%;
     
     /* Light gray sections */
-    --secondary: 245 245 247;
-    --secondary-foreground: 29 29 31;
+    --secondary: 210 10% 96%;
+    --secondary-foreground: 210 2% 11%;
     
     /* Success green */
-    --success: 52 199 89;
-    --success-foreground: 255 255 255;
+    --success: 142 70% 49%;
+    --success-foreground: 0 0% 100%;
     
-    /* Electric blue */
-    --electric: 0 122 255;
-    --electric-foreground: 255 255 255;
+    /* Electric blue slate */
+    --electric: 215 20% 45%;
+    --electric-foreground: 0 0% 100%;
     
-    --muted: 245 245 247;
-    --muted-foreground: 99 99 102;
+    --muted: 210 10% 96%;
+    --muted-foreground: 215 10% 39%;
     
-    --accent: 0 122 255;
-    --accent-foreground: 255 255 255;
+    --accent: 215 20% 45%;
+    --accent-foreground: 0 0% 100%;
     
-    --destructive: 255 59 48;
-    --destructive-foreground: 255 255 255;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
     
-    --border: 229 229 234;
-    --input: 229 229 234;
-    --ring: 0 122 255;
+    --border: 214 15% 91%;
+    --input: 214 15% 91%;
+    --ring: 215 20% 45%;
     
     --radius: 1rem;
     
@@ -81,34 +81,34 @@
   }
   
   .dark {
-    /* Override dark mode to keep light theme */
-    --background: 255 255 255;
-    --foreground: 29 29 31;
-    --card: 255 255 255;
-    --card-foreground: 29 29 31;
-    --popover: 255 255 255;
-    --popover-foreground: 29 29 31;
-    --primary: 0 122 255;
-    --primary-foreground: 255 255 255;
-    --secondary: 245 245 247;
-    --secondary-foreground: 29 29 31;
-    --muted: 245 245 247;
-    --muted-foreground: 99 99 102;
-    --accent: 0 122 255;
-    --accent-foreground: 255 255 255;
-    --destructive: 255 59 48;
-    --destructive-foreground: 255 255 255;
-    --border: 229 229 234;
-    --input: 229 229 234;
-    --ring: 0 122 255;
-    --sidebar-background: 255 255 255;
-    --sidebar-foreground: 29 29 31;
-    --sidebar-primary: 0 122 255;
-    --sidebar-primary-foreground: 255 255 255;
-    --sidebar-accent: 245 245 247;
-    --sidebar-accent-foreground: 29 29 31;
-    --sidebar-border: 229 229 234;
-    --sidebar-ring: 0 122 255;
+    /* Override dark mode to keep light theme - HSL Format */
+    --background: 0 0% 100%;
+    --foreground: 210 2% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 210 2% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 2% 11%;
+    --primary: 215 20% 45%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 10% 96%;
+    --secondary-foreground: 210 2% 11%;
+    --muted: 210 10% 96%;
+    --muted-foreground: 215 10% 39%;
+    --accent: 215 20% 45%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 15% 91%;
+    --input: 214 15% 91%;
+    --ring: 215 20% 45%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 210 2% 11%;
+    --sidebar-primary: 215 20% 45%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 10% 96%;
+    --sidebar-accent-foreground: 210 2% 11%;
+    --sidebar-border: 214 15% 91%;
+    --sidebar-ring: 215 20% 45%;
   }
 }
 
