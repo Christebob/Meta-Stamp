@@ -156,7 +156,7 @@ const platforms: Platform[] = [
 
 export const PlatformUploader = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [selectedPlatform, setSelectedPlatform] = useState<Platform | null>(null);
+  const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([]);
   const [metadata, setMetadata] = useState<UploadMetadata>({
     title: '',
     description: '',
@@ -263,44 +263,25 @@ export const PlatformUploader = () => {
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file && file.type.startsWith('video/')) {
-      // Check if file is compatible with selected platform
-      if (selectedPlatform) {
-        const fileExtension = file.name.split('.').pop()?.toLowerCase();
-        if (fileExtension && !selectedPlatform.supportedFormats.includes(fileExtension)) {
-          toast.error(`${selectedPlatform.name} doesn't support .${fileExtension} files`);
-          return;
-        }
-        
-        if (file.size > selectedPlatform.maxFileSize * 1024 * 1024) {
-          toast.error(`File too large for ${selectedPlatform.name} (max ${selectedPlatform.maxFileSize}MB)`);
-          return;
-        }
-      }
-      
       setSelectedFile(file);
       setMetadata(prev => ({ ...prev, title: file.name.replace(/\.[^/.]+$/, "") }));
-      toast.success('Video selected successfully');
+      toast.success('🎬 Content locked and loaded!');
     } else {
       toast.error('Please select a valid video file');
     }
   };
 
-  const handlePlatformSelect = (platformId: string) => {
+  const handlePlatformToggle = (platformId: string) => {
     const platform = platforms.find(p => p.id === platformId);
     if (platform) {
-      setSelectedPlatform(platform);
-      
-      // Check if current file is compatible
-      if (selectedFile) {
-        const fileExtension = selectedFile.name.split('.').pop()?.toLowerCase();
-        if (fileExtension && !platform.supportedFormats.includes(fileExtension)) {
-          toast.warning(`Your current file (.${fileExtension}) isn't supported by ${platform.name}`);
-          setSelectedFile(null);
-        } else if (selectedFile.size > platform.maxFileSize * 1024 * 1024) {
-          toast.warning(`Your current file is too large for ${platform.name} (max ${platform.maxFileSize}MB)`);
-          setSelectedFile(null);
+      setSelectedPlatforms(prev => {
+        const isSelected = prev.some(p => p.id === platformId);
+        if (isSelected) {
+          return prev.filter(p => p.id !== platformId);
+        } else {
+          return [...prev, platform];
         }
-      }
+      });
     }
   };
 
@@ -338,8 +319,13 @@ export const PlatformUploader = () => {
   };
 
   const handleUpload = async () => {
-    if (!selectedFile || !selectedPlatform) {
-      toast.error('Please select a video file and platform');
+    if (!selectedFile) {
+      toast.error('Please select a video file first');
+      return;
+    }
+
+    if (selectedPlatforms.length === 0) {
+      toast.error('Please select at least one platform');
       return;
     }
 
@@ -354,19 +340,20 @@ export const PlatformUploader = () => {
     try {
       // Step 1: Apply Meta-Stamp tracking
       setCurrentStep('watermark');
-      toast.info('Applying Meta-Stamp AI tracking...');
+      toast.info('🛡️ Applying Meta-Stamp AI tracking...');
       const wmId = await simulateWatermarking();
       setWatermarkId(wmId);
       
-      // Step 2: Upload to platform
+      // Step 2: Upload to platforms
       setCurrentStep('platform');
       setProgress(0);
-      toast.info(`Uploading to ${selectedPlatform.name}...`);
+      toast.info(`🚀 Uploading to ${selectedPlatforms.length} platform${selectedPlatforms.length > 1 ? 's' : ''}...`);
       await simulatePlatformUpload();
       
       // Step 3: Complete
       setCurrentStep('complete');
-      toast.success(`Successfully uploaded to ${selectedPlatform.name} with Meta-Stamp protection!`);
+      const platformNames = selectedPlatforms.map(p => p.name).join(', ');
+      toast.success(`🎉 Successfully uploaded to ${platformNames} with Meta-Stamp protection!`);
       
     } catch (error) {
       toast.error('Upload failed. Please try again.');
@@ -377,7 +364,7 @@ export const PlatformUploader = () => {
 
   const resetUpload = () => {
     setSelectedFile(null);
-    setSelectedPlatform(null);
+    setSelectedPlatforms([]);
     setMetadata({
       title: '',
       description: '',
@@ -396,7 +383,7 @@ export const PlatformUploader = () => {
   const getStepIcon = (step: string) => {
     switch (step) {
       case 'watermark': return <Shield className="w-4 h-4" />;
-      case 'platform': return selectedPlatform?.icon || <Upload className="w-4 h-4" />;
+      case 'platform': return <Upload className="w-4 h-4" />;
       case 'complete': return <CheckCircle className="w-4 h-4 text-green-500" />;
       default: return <Upload className="w-4 h-4" />;
     }
@@ -405,8 +392,8 @@ export const PlatformUploader = () => {
   const getStepText = () => {
     switch (currentStep) {
       case 'watermark': return 'Applying Meta-Stamp AI tracking...';
-      case 'platform': return `Uploading to ${selectedPlatform?.name}...`;
-      case 'complete': return 'Upload complete!';
+      case 'platform': return `Uploading to ${selectedPlatforms.length} platform${selectedPlatforms.length > 1 ? 's' : ''}...`;
+      case 'complete': return 'Mission accomplished!';
       default: return 'Ready to upload';
     }
   };
@@ -416,158 +403,207 @@ export const PlatformUploader = () => {
   const earningsProjections = totalViews > 0 ? calculateEarningsProjections(totalViews) : [];
 
   return (
-    <Card className="w-full max-w-6xl mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Upload className="w-5 h-5 text-primary" />
-          🚀 Upload & Protect Your Content
-          <Badge variant="outline" className="ml-auto bg-gradient-to-r from-purple-500 to-pink-500 text-white border-0">Rebel-Protected</Badge>
-        </CardTitle>
+    <Card className="w-full max-w-5xl mx-auto bg-gradient-to-br from-background via-background to-accent/5 border border-border/50 shadow-2xl">
+      <CardHeader className="text-center space-y-4 bg-gradient-to-r from-primary/5 via-accent/5 to-electric/5 rounded-t-lg">
+        <div className="flex items-center justify-center gap-3">
+          <div className="w-10 h-10 bg-gradient-creator rounded-xl flex items-center justify-center">
+            <Sparkles className="w-5 h-5 text-white" />
+          </div>
+          <CardTitle className="text-3xl font-bold bg-gradient-creator bg-clip-text text-transparent">
+            Content Command Center
+          </CardTitle>
+          <div className="w-10 h-10 bg-gradient-analytics rounded-xl flex items-center justify-center">
+            <Zap className="w-5 h-5 text-white" />
+          </div>
+        </div>
+        <p className="text-muted-foreground">Upload once. Deploy everywhere. Get paid forever.</p>
       </CardHeader>
       
-      <CardContent className="space-y-6">
+      <CardContent className="p-8">
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)} className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="upload">🚀 Re-upload now and plug into the future of commerce</TabsTrigger>
-            <TabsTrigger value="import">💰 Import & Re-Upload with Confidence</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 mb-8">
+            <TabsTrigger value="upload" className="text-sm">⚡ Launch Mission</TabsTrigger>
+            <TabsTrigger value="import" className="text-sm">📊 Import & Analyze</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="upload" className="space-y-6">
-            {/* Platform Selection */}
-            <div className="space-y-3">
-              <Label className="text-lg font-semibold">🎯 Pick Your Platform (Don't let them win!)</Label>
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
-                {platforms.map((platform) => (
-                  <Button
-                    key={platform.id}
-                    variant={selectedPlatform?.id === platform.id ? "default" : "outline"}
-                    className="h-auto p-4 flex flex-col items-center gap-2"
-                    onClick={() => handlePlatformSelect(platform.id)}
-                    disabled={isProcessing}
-                  >
-                    <div className={platform.color}>
-                      {platform.icon}
-                    </div>
-                    <span className="text-xs font-medium">{platform.name}</span>
-                  </Button>
-                ))}
-              </div>
+          <TabsContent value="upload" className="space-y-0">
+            {/* Single Streamlined Upload Flow */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
               
-              {selectedPlatform && (
-                <Alert className="border-orange-200 bg-orange-50">
-                  <AlertCircle className="h-4 w-4 text-orange-600" />
-                  <AlertDescription>
-                    <strong>🎪 {selectedPlatform.name} specs:</strong> Max {selectedPlatform.maxFileSize}MB, 
-                    Formats: {selectedPlatform.supportedFormats.join(', ')}
-                    {selectedPlatform.avgRevenue && (
-                      <span className="block text-sm mt-1 text-green-600">
-                        💰 With Meta-Stamp: ${(selectedPlatform.avgRevenue * 4.2).toFixed(2)} per 1k views vs ${selectedPlatform.avgRevenue} standard
-                      </span>
-                    )}
-                  </AlertDescription>
-                </Alert>
-              )}
-            </div>
+              {/* Left: File Upload */}
+              <div className="lg:col-span-5 space-y-6">
+                <div className="text-center">
+                  <h3 className="text-xl font-bold mb-2 text-foreground">1. Deploy Content</h3>
+                  <p className="text-sm text-muted-foreground">Start here. Upload your masterpiece.</p>
+                </div>
+                
+                <div 
+                  className="relative border-2 border-dashed border-primary/30 rounded-xl p-8 text-center cursor-pointer hover:border-primary/60 transition-all duration-300 hover:shadow-glow bg-gradient-to-br from-background to-primary/5"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-xl opacity-50"></div>
+                  <div className="relative">
+                    <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-primary to-primary/70 rounded-2xl flex items-center justify-center">
+                      {selectedFile ? <FileVideo className="w-8 h-8 text-white" /> : <Upload className="w-8 h-8 text-white" />}
+                    </div>
+                    <p className="text-lg font-medium text-foreground mb-2">
+                      {selectedFile ? `✅ ${selectedFile.name}` : 'Drop content here'}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Any video format • Max 500GB
+                    </p>
+                    <Input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="video/*"
+                      onChange={handleFileSelect}
+                      className="hidden"
+                    />
+                  </div>
+                </div>
 
-            {/* File Upload */}
-            <div className="space-y-3">
-              <Label className="text-lg font-semibold">📹 Drop Your Masterpiece Here</Label>
-              <div 
-                className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center cursor-pointer hover:border-primary/50 transition-colors"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <Upload className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                <p className="text-lg font-medium text-foreground mb-2">
-                  {selectedFile ? `🎬 ${selectedFile.name}` : '🎯 Upload your content here to protect it from corporate appropriation'}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {selectedPlatform 
-                    ? `Ready for ${selectedPlatform.name}: ${selectedPlatform.supportedFormats.join(', ')} (max ${selectedPlatform.maxFileSize}MB)`
-                    : 'Pick a platform first, then we\'ll show you what they accept'
-                  }
-                </p>
-                <Input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="video/*"
-                  onChange={handleFileSelect}
-                  className="hidden"
-                />
+                {selectedFile && (
+                  <div className="space-y-4 animate-fade-in">
+                    <Input
+                      placeholder="Video title"
+                      value={metadata.title}
+                      onChange={(e) => setMetadata(prev => ({ ...prev, title: e.target.value }))}
+                      className="bg-background/50"
+                    />
+                    <Textarea
+                      placeholder="Description (optional)"
+                      value={metadata.description}
+                      onChange={(e) => setMetadata(prev => ({ ...prev, description: e.target.value }))}
+                      className="bg-background/50 min-h-[80px]"
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Center: Arrow */}
+              <div className="lg:col-span-2 flex items-center justify-center">
+                <div className="hidden lg:flex flex-col items-center space-y-2">
+                  <div className="w-8 h-8 bg-gradient-to-r from-primary to-electric rounded-full flex items-center justify-center">
+                    <Zap className="w-4 h-4 text-white" />
+                  </div>
+                  <div className="w-0.5 h-16 bg-gradient-to-b from-primary to-electric"></div>
+                  <div className="w-8 h-8 bg-gradient-to-r from-electric to-success rounded-full flex items-center justify-center">
+                    <Target className="w-4 h-4 text-white" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Right: Platform Selection */}
+              <div className="lg:col-span-5 space-y-6">
+                <div className="text-center">
+                  <h3 className="text-xl font-bold mb-2 text-foreground">2. Select Targets</h3>
+                  <p className="text-sm text-muted-foreground">Choose your distribution channels.</p>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {platforms.map((platform) => {
+                    const isSelected = selectedPlatforms.some(p => p.id === platform.id);
+                    return (
+                      <Button
+                        key={platform.id}
+                        variant={isSelected ? "default" : "outline"}
+                        className={`h-20 flex flex-col items-center gap-2 transition-all duration-200 ${
+                          isSelected 
+                            ? 'bg-gradient-to-br from-primary to-primary/80 text-white shadow-lg' 
+                            : 'hover:bg-accent/50 hover:border-primary/30'
+                        }`}
+                        onClick={() => handlePlatformToggle(platform.id)}
+                        disabled={isProcessing}
+                      >
+                        <div className={isSelected ? 'text-white' : platform.color}>
+                          {platform.icon}
+                        </div>
+                        <span className="text-xs font-medium">{platform.name}</span>
+                        {isSelected && <CheckCircle className="w-3 h-3 text-white" />}
+                      </Button>
+                    );
+                  })}
+                </div>
+
+                {selectedPlatforms.length > 0 && (
+                  <Alert className="border-success/30 bg-success/5 animate-fade-in">
+                    <CheckCircle className="h-4 w-4 text-success" />
+                    <AlertDescription>
+                      <strong>{selectedPlatforms.length} platform{selectedPlatforms.length > 1 ? 's' : ''} selected</strong>
+                      <div className="text-sm mt-1 text-success">
+                        💰 Estimated: ${(selectedPlatforms.reduce((sum, p) => sum + (p.avgRevenue || 0), 0) * 4.2).toFixed(2)} per 1k views with Meta-Stamp
+                      </div>
+                    </AlertDescription>
+                  </Alert>
+                )}
               </div>
             </div>
 
-            {/* Video Metadata */}
-            {selectedFile && selectedPlatform && (
-              <div className="space-y-4 p-4 border rounded-lg bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200">
-                <h3 className="font-semibold">📝 Make it Legendary (Your call, your content)</h3>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="title">🏆 Title * (Make it count!)</Label>
-                  <Input
-                    id="title"
-                    value={metadata.title}
-                    onChange={(e) => setMetadata(prev => ({ ...prev, title: e.target.value }))}
-                    placeholder="Your masterpiece deserves a killer title..."
-                    disabled={isProcessing}
-                  />
+            {/* Mission Launch Zone */}
+            {selectedFile && selectedPlatforms.length > 0 && (
+              <div className="mt-8 space-y-6">
+                <div className="text-center">
+                  <h3 className="text-2xl font-bold mb-2 bg-gradient-creator bg-clip-text text-transparent">3. Launch Mission</h3>
+                  <p className="text-sm text-muted-foreground">Final details and deploy.</p>
                 </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="description">📖 Tell Your Story</Label>
-                  <Textarea
-                    id="description"
-                    value={metadata.description}
-                    onChange={(e) => setMetadata(prev => ({ ...prev, description: e.target.value }))}
-                    placeholder="What makes this content uniquely yours? Let the world know..."
-                    rows={3}
-                    disabled={isProcessing}
-                  />
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="tags">🏷️ Tags (Help rebels find you)</Label>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div className="space-y-4">
                     <Input
-                      id="tags"
-                      value={metadata.tags}
-                      onChange={(e) => setMetadata(prev => ({ ...prev, tags: e.target.value }))}
-                      placeholder="creator, original, protected, rebel, authentic..."
-                      disabled={isProcessing}
+                      placeholder="Mission title"
+                      value={metadata.title}
+                      onChange={(e) => setMetadata(prev => ({ ...prev, title: e.target.value }))}
+                      className="text-lg font-medium h-12"
+                    />
+                    <Textarea
+                      placeholder="Mission brief (optional)"
+                      value={metadata.description}
+                      onChange={(e) => setMetadata(prev => ({ ...prev, description: e.target.value }))}
+                      className="min-h-[100px]"
                     />
                   </div>
                   
-                  <div className="space-y-2">
-                    <Label htmlFor="visibility">👁️ Who Gets to See This?</Label>
+                  <div className="space-y-4">
                     <Select 
                       value={metadata.visibility} 
                       onValueChange={(value) => setMetadata(prev => ({ ...prev, visibility: value as any }))}
-                      disabled={isProcessing}
                     >
-                      <SelectTrigger>
-                        <SelectValue />
+                      <SelectTrigger className="h-12">
+                        <SelectValue placeholder="Visibility" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="public">
-                          <div className="flex items-center gap-2">
-                            <Globe className="w-4 h-4" />
-                            Public
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="unlisted">
-                          <div className="flex items-center gap-2">
-                            <Eye className="w-4 h-4" />
-                            Unlisted
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="private">
-                          <div className="flex items-center gap-2">
-                            <Clock className="w-4 h-4" />
-                            Private
-                          </div>
-                        </SelectItem>
+                        <SelectItem value="public">🌍 Public - Full visibility</SelectItem>
+                        <SelectItem value="unlisted">🔗 Unlisted - Link only</SelectItem>
+                        <SelectItem value="private">🔒 Private - Personal vault</SelectItem>
                       </SelectContent>
                     </Select>
+                    <Input
+                      placeholder="Tags: creator, original, protected..."
+                      value={metadata.tags}
+                      onChange={(e) => setMetadata(prev => ({ ...prev, tags: e.target.value }))}
+                      className="h-12"
+                    />
                   </div>
+                </div>
+
+                <div className="text-center">
+                  <Button
+                    onClick={handleUpload}
+                    disabled={!selectedFile || selectedPlatforms.length === 0 || !metadata.title.trim() || isProcessing}
+                    className="h-14 px-12 text-lg bg-gradient-to-r from-primary via-electric to-success hover:shadow-glow"
+                  >
+                    {isProcessing ? (
+                      <>
+                        <Loader2 className="w-5 h-5 mr-3 animate-spin" />
+                        Mission in progress...
+                      </>
+                    ) : (
+                      <>
+                        <Zap className="w-5 h-5 mr-3" />
+                        Deploy & Protect ({selectedPlatforms.length} targets)
+                      </>
+                    )}
+                  </Button>
                 </div>
               </div>
             )}
@@ -626,7 +662,7 @@ export const PlatformUploader = () => {
                 <>
                   <Button
                     onClick={handleUpload}
-                    disabled={!selectedFile || !selectedPlatform || !metadata.title.trim() || isProcessing}
+                    disabled={!selectedFile || selectedPlatforms.length === 0 || !metadata.title.trim() || isProcessing}
                     className="flex-1 bg-gradient-creator hover:bg-gradient-creator/90"
                   >
                     {isProcessing ? (
@@ -642,7 +678,7 @@ export const PlatformUploader = () => {
                     )}
                   </Button>
                   
-                  {(selectedFile || selectedPlatform) && (
+                  {(selectedFile || selectedPlatforms.length > 0) && (
                     <Button
                       variant="outline"
                       onClick={resetUpload}
