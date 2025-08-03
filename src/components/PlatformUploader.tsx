@@ -33,9 +33,11 @@ import {
   Clock,
   PlayCircle,
   Tv,
-  Radio
+  Radio,
+  Bot
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 // Platform definitions
 interface Platform {
@@ -171,6 +173,8 @@ export const PlatformUploader = () => {
   const [importedContent, setImportedContent] = useState<ImportedContent[]>([]);
   const [showEarningsProjection, setShowEarningsProjection] = useState(false);
   const [activeTab, setActiveTab] = useState<'upload' | 'import'>('upload');
+  const [uploadedContentId, setUploadedContentId] = useState<string>('');
+  const [isSimulatingAI, setIsSimulatingAI] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Mock data for imported content
@@ -318,6 +322,75 @@ export const PlatformUploader = () => {
     });
   };
 
+  // Generate content hash from file
+  const generateContentHash = async (file: File): Promise<string> => {
+    const arrayBuffer = await file.arrayBuffer();
+    const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    return hashHex.substring(0, 16); // Shorter hash for display
+  };
+
+  // Simulate AI usage and add to database
+  const simulateAIUsage = async () => {
+    if (!uploadedContentId) {
+      toast.error('No content uploaded yet');
+      return;
+    }
+
+    setIsSimulatingAI(true);
+    
+    try {
+      // Random AI usage data
+      const aiModels = ['GPT-4', 'Claude', 'Midjourney', 'DALL-E'];
+      const usageTypes = ['Training', 'Generation', 'Analysis'];
+      const randomModel = aiModels[Math.floor(Math.random() * aiModels.length)];
+      const randomUsageType = usageTypes[Math.floor(Math.random() * usageTypes.length)];
+      const randomDuration = Math.floor(Math.random() * 26) + 5; // 5-30 seconds
+      const earnings = randomDuration * 0.15;
+
+      // Insert into ai_usage_logs using raw supabase client
+      const { error: logError } = await (supabase as any)
+        .from('ai_usage_logs')
+        .insert([{
+          content_id: uploadedContentId,
+          ai_model: randomModel,
+          usage_type: randomUsageType,
+          duration_seconds: randomDuration,
+          earnings: earnings
+        }]);
+
+      if (logError) throw logError;
+
+      // Update content_registry counters - manual update
+      const { data: currentData } = await (supabase as any)
+        .from('content_registry')
+        .select('ai_touches, total_earned')
+        .eq('id', uploadedContentId)
+        .single();
+
+      if (currentData) {
+        await (supabase as any)
+          .from('content_registry')
+          .update({
+            ai_touches: (currentData.ai_touches || 0) + 1,
+            total_earned: (currentData.total_earned || 0) + earnings
+          })
+          .eq('id', uploadedContentId);
+      }
+
+      toast.success(`🤖 AI used your content! +$${earnings.toFixed(4)} earned from ${randomModel}`, {
+        description: `${randomUsageType} for ${randomDuration} seconds`
+      });
+
+    } catch (error) {
+      console.error('Error simulating AI usage:', error);
+      toast.error('Failed to simulate AI usage');
+    } finally {
+      setIsSimulatingAI(false);
+    }
+  };
+
   const handleUpload = async () => {
     if (!selectedFile) {
       toast.error('Please select a video file first');
@@ -344,18 +417,39 @@ export const PlatformUploader = () => {
       const wmId = await simulateWatermarking();
       setWatermarkId(wmId);
       
-      // Step 2: Upload to platforms
+      // Step 2: Upload to platforms and save to database
       setCurrentStep('platform');
       setProgress(0);
       toast.info(`🚀 Uploading to ${selectedPlatforms.length} platform${selectedPlatforms.length > 1 ? 's' : ''}...`);
       await simulatePlatformUpload();
       
+      // Generate content hash and save to database
+      const contentHash = await generateContentHash(selectedFile);
+      const platformName = selectedPlatforms[0]?.name || 'Unknown';
+      
+      const { data, error } = await (supabase as any)
+        .from('content_registry')
+        .insert([{
+          content_hash: contentHash,
+          creator_name: 'Demo Creator',
+          platform: platformName,
+          title: metadata.title
+        }])
+        .select();
+
+      if (error) throw error;
+      
+      setUploadedContentId(data?.[0]?.id || '');
+      
       // Step 3: Complete
       setCurrentStep('complete');
       const platformNames = selectedPlatforms.map(p => p.name).join(', ');
-      toast.success(`🎉 Successfully uploaded to ${platformNames} with Meta-Stamp protection!`);
+      toast.success(`🎉 Successfully uploaded to ${platformNames} with Meta-Stamp protection!`, {
+        description: `Content Hash: ${contentHash}`
+      });
       
     } catch (error) {
+      console.error('Upload error:', error);
       toast.error('Upload failed. Please try again.');
     } finally {
       setIsProcessing(false);
@@ -374,6 +468,7 @@ export const PlatformUploader = () => {
     setProgress(0);
     setCurrentStep('upload');
     setWatermarkId('');
+    setUploadedContentId('');
     setIsProcessing(false);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -635,7 +730,7 @@ export const PlatformUploader = () => {
                   <Alert className="border-green-200 bg-green-50">
                     <CheckCircle className="h-4 w-4 text-green-600" />
                     <AlertDescription>
-                      <div className="space-y-2">
+                      <div className="space-y-3">
                         <p className="font-medium text-green-800">
                           Video uploaded successfully with Meta-Stamp protection!
                         </p>
@@ -645,6 +740,25 @@ export const PlatformUploader = () => {
                         <p className="text-sm text-green-700">
                           Your video is now protected and any AI usage will be automatically tracked.
                         </p>
+                        {uploadedContentId && (
+                          <Button
+                            onClick={simulateAIUsage}
+                            disabled={isSimulatingAI}
+                            className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600"
+                          >
+                            {isSimulatingAI ? (
+                              <>
+                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                Simulating AI Usage...
+                              </>
+                            ) : (
+                              <>
+                                <Bot className="w-4 h-4 mr-2" />
+                                🤖 Simulate AI Usage
+                              </>
+                            )}
+                          </Button>
+                        )}
                       </div>
                     </AlertDescription>
                   </Alert>

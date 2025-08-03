@@ -2,42 +2,68 @@ import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { DollarSign, TrendingUp } from 'lucide-react';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 interface EarningsTickerProps {
   userName?: string;
 }
 
 export const EarningsTicker = ({ userName = "Chris Coyne" }: EarningsTickerProps) => {
-  const [currentEarnings, setCurrentEarnings] = useState(158.9234);
-  const [lastNotificationAmount, setLastNotificationAmount] = useState(100);
+  const [currentEarnings, setCurrentEarnings] = useState(0);
+  const [lastNotificationAmount, setLastNotificationAmount] = useState(0);
+
+  // Fetch real-time earnings from database
+  const fetchEarnings = async () => {
+    try {
+      const { data, error } = await (supabase as any)
+        .from('content_registry')
+        .select('total_earned');
+      
+      if (error) throw error;
+      
+      const totalEarnings = data?.reduce((sum: number, content: any) => sum + (content.total_earned || 0), 0) || 0;
+      setCurrentEarnings(totalEarnings);
+    } catch (error) {
+      console.error('Error fetching earnings:', error);
+    }
+  };
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      const increment = Math.random() * 0.0087 + 0.0023; // Random increment between $0.0023 and $0.0110
-      setCurrentEarnings(prev => {
-        const newAmount = prev + increment;
-        
-        // Check if we've crossed a $100 threshold
-        const currentThreshold = Math.floor(newAmount / 100) * 100;
-        const previousThreshold = Math.floor(prev / 100) * 100;
-        
-        if (currentThreshold > previousThreshold && currentThreshold >= lastNotificationAmount + 100) {
-          setLastNotificationAmount(currentThreshold);
-          toast.success(
-            `🎉 You just earned another $100! Total: $${newAmount.toFixed(4)}`,
-            {
-              duration: 5000,
-              description: "Your content is working for you!"
-            }
-          );
-        }
-        
-        return newAmount;
-      });
-    }, 1200); // Update every 1.2 seconds
+    // Initial fetch
+    fetchEarnings();
 
-    return () => clearInterval(interval);
-  }, [lastNotificationAmount]);
+    // Set up real-time subscription to ai_usage_logs
+    const channel = supabase
+      .channel('earnings_updates')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'ai_usage_logs'
+        },
+        (payload) => {
+          console.log('New AI usage detected:', payload);
+          fetchEarnings(); // Refresh earnings when new usage is logged
+          
+          const earnings = payload.new?.earnings;
+          if (earnings) {
+            toast.success(
+              `🤖 AI used your content! +$${earnings.toFixed(4)} earned`,
+              {
+                duration: 3000,
+                description: "Real-time earnings update"
+              }
+            );
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   return (
     <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-2xl px-4">

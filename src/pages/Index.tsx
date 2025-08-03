@@ -3,6 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Upload, Zap, TrendingUp, Play, Eye, DollarSign, Activity, Sparkles } from 'lucide-react';
 import { useState } from 'react';
+import { ActivityFeed } from '@/components/ActivityFeed';
+import { PlatformUploader } from '@/components/PlatformUploader';
 
 const Index = () => {
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
@@ -86,38 +88,10 @@ const Index = () => {
             </Card>
           </div>
 
-          {/* Live Activity Feed - Highlighted Like Ticker */}
-          <Card className="glass-panel border-0 rounded-3xl mb-8 shadow-elevated glow-success">
-            <CardContent className="p-6">
-              <h3 className="text-lg font-semibold mb-4 flex items-center justify-center">
-                <Eye className="w-5 h-5 mr-2" />
-                Live Activity Feed
-              </h3>
-              <div className="space-y-3 text-left">
-                <div className="glass-panel rounded-2xl p-3 flex items-center justify-between transition-smooth hover:glow-success">
-                  <div className="flex items-center">
-                    <Sparkles className="w-4 h-4 text-primary mr-3" />
-                    <span className="text-sm">GPT-4 accessed "Summer Vibes Tutorial"</span>
-                  </div>
-                  <span className="text-success font-bold">+$0.057</span>
-                </div>
-                <div className="glass-panel rounded-2xl p-3 flex items-center justify-between transition-smooth hover:glow-success">
-                  <div className="flex items-center">
-                    <Sparkles className="w-4 h-4 text-primary mr-3" />
-                    <span className="text-sm">Claude-3 analyzed "Dance Moves Compilation"</span>
-                  </div>
-                  <span className="text-success font-bold">+$0.043</span>
-                </div>
-                <div className="glass-panel rounded-2xl p-3 flex items-center justify-between transition-smooth hover:glow-success">
-                  <div className="flex items-center">
-                    <Sparkles className="w-4 h-4 text-primary mr-3" />
-                    <span className="text-sm">Gemini trained on "Cooking Masterclass"</span>
-                  </div>
-                  <span className="text-success font-bold">+$0.065</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Live Activity Feed */}
+          <div className="mb-8">
+            <ActivityFeed />
+          </div>
         </div>
         
         {/* Smaller Claim Your Cut Section */}
@@ -134,51 +108,9 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Main Section - Streamlined */}
+      {/* Main Section - Platform Uploader */}
       <div className="relative z-10 max-w-5xl mx-auto px-4 space-y-12">
-        
-        {/* Upload Zone */}
-        <div className="text-center">
-          <Card className="glass-panel border-0 rounded-2xl particle-border overflow-hidden">
-            <CardContent className="p-4 relative">
-              <div className="light-rays absolute inset-0" />
-              <div className="relative z-10 flex flex-col items-center space-y-2">
-                <div className="w-12 h-12 bg-gradient-creator rounded-full flex items-center justify-center glow-primary floating">
-                  <Upload className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="text-lg font-semibold">Drop here to track your influence</h3>
-                <p className="text-sm text-muted-foreground">Any video format</p>
-                <Button size="sm" className="btn-futuristic px-4 py-2 text-sm font-semibold rounded-xl">
-                  Choose File
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Platform Selector */}
-        <div className="text-center">
-          <h2 className="text-lg font-bold mb-3">Choose Your Distribution Channels</h2>
-          
-          <div className="grid grid-cols-5 gap-2 max-w-lg mx-auto">
-            {platforms.map((platform) => (
-              <Card 
-                key={platform.name}
-                className={`glass-panel border-0 rounded-xl cursor-pointer transition-smooth hover:scale-105 floating shadow-floating ${
-                  selectedPlatforms.includes(platform.name) 
-                    ? 'glow-primary' 
-                    : 'hover:glow-primary'
-                }`}
-                onClick={() => togglePlatform(platform.name)}
-              >
-                <CardContent className="p-2 text-center">
-                  <div className="text-lg mb-1">{platform.icon}</div>
-                  <p className="text-xs font-medium">{platform.name}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
+        <PlatformUploader />
 
         {/* AI Models Using Your Content */}
         <Card className="glass-panel border-0 rounded-3xl shadow-elevated">
