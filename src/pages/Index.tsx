@@ -139,16 +139,16 @@ const Index = () => {
         
         {/* Upload Zone */}
         <div className="text-center">
-          <Card className="glass-panel border-0 rounded-3xl particle-border overflow-hidden">
-            <CardContent className="p-12 relative">
+          <Card className="glass-panel border-0 rounded-2xl particle-border overflow-hidden">
+            <CardContent className="p-4 relative">
               <div className="light-rays absolute inset-0" />
-              <div className="relative z-10 flex flex-col items-center space-y-4">
-                <div className="w-16 h-16 bg-gradient-creator rounded-full flex items-center justify-center glow-primary floating">
-                  <Upload className="w-8 h-8 text-white" />
+              <div className="relative z-10 flex flex-col items-center space-y-2">
+                <div className="w-12 h-12 bg-gradient-creator rounded-full flex items-center justify-center glow-primary floating">
+                  <Upload className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold">Drop here to claim your cut</h3>
-                <p className="text-muted-foreground">Any video format • Max 500GB</p>
-                <Button size="lg" className="btn-futuristic px-6 py-4 text-base font-semibold rounded-2xl">
+                <h3 className="text-lg font-semibold">Drop here to track your influence</h3>
+                <p className="text-sm text-muted-foreground">Any video format</p>
+                <Button size="sm" className="btn-futuristic px-4 py-2 text-sm font-semibold rounded-xl">
                   Choose File
                 </Button>
               </div>
@@ -158,21 +158,21 @@ const Index = () => {
 
         {/* Platform Selector */}
         <div className="text-center">
-          <h2 className="text-2xl font-bold mb-6">Choose Your Distribution Channels</h2>
+          <h2 className="text-lg font-bold mb-3">Choose Your Distribution Channels</h2>
           
-          <div className="grid grid-cols-3 md:grid-cols-5 gap-4 max-w-2xl mx-auto">
+          <div className="grid grid-cols-5 gap-2 max-w-lg mx-auto">
             {platforms.map((platform) => (
               <Card 
                 key={platform.name}
-                className={`glass-panel border-0 rounded-2xl cursor-pointer transition-smooth hover:scale-105 floating shadow-floating ${
+                className={`glass-panel border-0 rounded-xl cursor-pointer transition-smooth hover:scale-105 floating shadow-floating ${
                   selectedPlatforms.includes(platform.name) 
                     ? 'glow-primary' 
                     : 'hover:glow-primary'
                 }`}
                 onClick={() => togglePlatform(platform.name)}
               >
-                <CardContent className="p-4 text-center">
-                  <div className="text-2xl mb-2">{platform.icon}</div>
+                <CardContent className="p-2 text-center">
+                  <div className="text-lg mb-1">{platform.icon}</div>
                   <p className="text-xs font-medium">{platform.name}</p>
                 </CardContent>
               </Card>
