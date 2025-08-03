@@ -15,8 +15,6 @@ const Index = () => {
     { name: 'Instagram', icon: '📷', color: 'text-pink-500' },
     { name: 'Twitter/X', icon: '🐦', color: 'text-primary' },
     { name: 'Facebook', icon: '👤', color: 'text-primary' },
-    { name: 'BeastTube', icon: '🦁', color: 'text-orange-500' },
-    { name: 'Meta Hub', icon: '🌐', color: 'text-purple-500' },
   ];
 
   const aiModels = [
@@ -42,169 +40,75 @@ const Index = () => {
       <div className="relative z-10">
         <EarningsTicker userName="Chris Coyne" />
         
-        <div className="text-center pt-24 pb-16 px-4">
-          <div className="relative">
-            <h1 className="text-6xl md:text-8xl font-black bg-gradient-creator bg-clip-text text-transparent mb-6 holographic">
-              CLAIM YOUR CUT
-            </h1>
-            <div className="absolute inset-0 bg-gradient-creator opacity-20 blur-3xl rounded-full" />
-          </div>
-          <p className="text-xl md:text-2xl text-muted-foreground font-medium">
-            Upload. Get Meta-Stamped. Track Your Influence. Get Paid.
-          </p>
-        </div>
-      </div>
-
-      {/* Main Section - 3 Steps */}
-      <div className="relative z-10 max-w-6xl mx-auto px-4 space-y-16">
-        
-        {/* Step 1: Upload Zone */}
-        <div className="text-center">
-          <div className="flex items-center justify-center mb-8">
-            <div className="w-12 h-12 bg-gradient-creator rounded-full flex items-center justify-center text-white font-bold text-xl mr-4 glow-primary">1</div>
-            <h2 className="text-3xl font-bold">Upload Your Masterpiece</h2>
-          </div>
-          
-          <Card className="glass-panel border-0 rounded-3xl particle-border overflow-hidden">
-            <CardContent className="p-16 relative">
-              <div className="light-rays absolute inset-0" />
-              <div className="relative z-10 flex flex-col items-center space-y-6">
-                <div className="w-20 h-20 bg-gradient-creator rounded-full flex items-center justify-center glow-primary floating">
-                  <Upload className="w-10 h-10 text-white" />
-                </div>
-                <h3 className="text-2xl font-semibold">Drop Your Masterpiece Here</h3>
-                <p className="text-muted-foreground">Any video format • Max 500GB</p>
-                <Button size="lg" className="btn-futuristic px-8 py-6 text-lg font-semibold rounded-2xl">
-                  Choose File
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Step 2: Platform Selector */}
-        <div className="text-center">
-          <div className="flex items-center justify-center mb-8">
-            <div className="w-12 h-12 bg-gradient-analytics rounded-full flex items-center justify-center text-white font-bold text-xl mr-4 glow-success">2</div>
-            <h2 className="text-3xl font-bold">Choose Your Distribution Channels</h2>
-          </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-6">
-            {platforms.map((platform) => (
-              <Card 
-                key={platform.name}
-                className={`glass-panel border-0 rounded-2xl cursor-pointer transition-smooth hover:scale-105 floating shadow-floating ${
-                  selectedPlatforms.includes(platform.name) 
-                    ? 'glow-primary' 
-                    : 'hover:glow-primary'
-                }`}
-                onClick={() => togglePlatform(platform.name)}
-              >
-                <CardContent className="p-6 text-center">
-                  <div className="text-3xl mb-3">{platform.icon}</div>
-                  <p className="text-sm font-medium">{platform.name}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-
-        {/* Step 3: Live Influence Tracker */}
-        <div className="text-center">
-          <div className="flex items-center justify-center mb-8">
-            <div className="w-12 h-12 bg-gradient-success rounded-full flex items-center justify-center text-white font-bold text-xl mr-4 glow-success">3</div>
-            <h2 className="text-3xl font-bold">Track Your Live Influence</h2>
-          </div>
-          
+        {/* Earnings Dashboard - Prominently Featured */}
+        <div className="max-w-6xl mx-auto px-4 pt-12 pb-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             {/* AI Touches Counter */}
             <Card className="glass-panel border-0 rounded-3xl glow-primary floating">
-              <CardContent className="p-8 text-center">
-                <div className="flex items-center justify-center mb-4">
-                  <Zap className="w-6 h-6 text-primary mr-2" />
-                  <span className="text-sm font-medium text-primary">AI TOUCHES</span>
+              <CardContent className="p-6 text-center">
+                <div className="flex items-center justify-center mb-3">
+                  <Zap className="w-5 h-5 text-primary mr-2" />
+                  <span className="text-xs font-medium text-primary">AI TOUCHES</span>
                 </div>
-                <div className="text-5xl font-black text-primary mb-2 holographic">
+                <div className="text-4xl font-black text-primary mb-1 holographic">
                   {aiTouches.toLocaleString()}
                 </div>
-                <div className="text-sm text-muted-foreground">+47 in last hour</div>
+                <div className="text-xs text-muted-foreground">+47 in last hour</div>
               </CardContent>
             </Card>
 
             {/* Earnings Per Touch */}
-            <Card className="glass-panel border-0 rounded-3xl glow-success floating" style={{ animationDelay: '1s' }}>
-              <CardContent className="p-8 text-center">
-                <div className="flex items-center justify-center mb-4">
-                  <DollarSign className="w-6 h-6 text-success mr-2" />
-                  <span className="text-sm font-medium text-success">PER TOUCH</span>
+            <Card className="glass-panel border-0 rounded-3xl glow-success floating" style={{ animationDelay: '0.5s' }}>
+              <CardContent className="p-6 text-center">
+                <div className="flex items-center justify-center mb-3">
+                  <DollarSign className="w-5 h-5 text-success mr-2" />
+                  <span className="text-xs font-medium text-success">PER TOUCH</span>
                 </div>
-                <div className="text-5xl font-black text-success mb-2 holographic">
+                <div className="text-4xl font-black text-success mb-1 holographic">
                   ${earningsPerTouch.toFixed(4)}
                 </div>
-                <div className="text-sm text-muted-foreground">+12% this week</div>
+                <div className="text-xs text-muted-foreground">+12% this week</div>
               </CardContent>
             </Card>
 
             {/* Total Revenue */}
-            <Card className="glass-panel border-0 rounded-3xl glow-primary floating" style={{ animationDelay: '2s' }}>
-              <CardContent className="p-8 text-center">
-                <div className="flex items-center justify-center mb-4">
-                  <TrendingUp className="w-6 h-6 text-primary mr-2" />
-                  <span className="text-sm font-medium text-primary">TOTAL EARNED</span>
+            <Card className="glass-panel border-0 rounded-3xl glow-primary floating" style={{ animationDelay: '1s' }}>
+              <CardContent className="p-6 text-center">
+                <div className="flex items-center justify-center mb-3">
+                  <TrendingUp className="w-5 h-5 text-primary mr-2" />
+                  <span className="text-xs font-medium text-primary">TOTAL EARNED</span>
                 </div>
-                <div className="text-5xl font-black text-primary mb-2 holographic">
+                <div className="text-4xl font-black text-primary mb-1 holographic">
                   ${(aiTouches * earningsPerTouch).toFixed(2)}
                 </div>
-                <div className="text-sm text-muted-foreground">All-time</div>
+                <div className="text-xs text-muted-foreground">All-time</div>
               </CardContent>
             </Card>
           </div>
 
-          {/* AI Models Using Your Content */}
-          <Card className="glass-panel border-0 rounded-3xl mb-8 shadow-elevated">
-            <CardContent className="p-8">
-              <h3 className="text-xl font-semibold mb-6 flex items-center justify-center">
-                <Activity className="w-5 h-5 mr-2" />
-                AI Models Using Your Content
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {aiModels.map((model, index) => (
-                  <div key={model.name} className="glass-panel rounded-2xl p-6 transition-smooth hover:glow-primary floating" style={{ animationDelay: `${index * 0.5}s` }}>
-                    <div className="flex justify-between items-center mb-3">
-                      <span className="font-medium text-lg">{model.name}</span>
-                      <span className="text-sm text-success font-bold">+${model.earnings}</span>
-                    </div>
-                    <div className="text-3xl font-bold text-primary mb-1">{model.touches}</div>
-                    <div className="text-sm text-muted-foreground">touches today</div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Live Notifications */}
-          <Card className="glass-panel border-0 rounded-3xl shadow-elevated">
-            <CardContent className="p-8">
-              <h3 className="text-xl font-semibold mb-6 flex items-center justify-center">
+          {/* Live Activity Feed - Highlighted Like Ticker */}
+          <Card className="glass-panel border-0 rounded-3xl mb-8 shadow-elevated glow-success">
+            <CardContent className="p-6">
+              <h3 className="text-lg font-semibold mb-4 flex items-center justify-center">
                 <Eye className="w-5 h-5 mr-2" />
                 Live Activity Feed
               </h3>
-              <div className="space-y-4 text-left">
-                <div className="glass-panel rounded-2xl p-4 flex items-center justify-between transition-smooth hover:glow-success">
+              <div className="space-y-3 text-left">
+                <div className="glass-panel rounded-2xl p-3 flex items-center justify-between transition-smooth hover:glow-success">
                   <div className="flex items-center">
                     <Sparkles className="w-4 h-4 text-primary mr-3" />
                     <span className="text-sm">GPT-4 accessed "Summer Vibes Tutorial"</span>
                   </div>
                   <span className="text-success font-bold">+$0.057</span>
                 </div>
-                <div className="glass-panel rounded-2xl p-4 flex items-center justify-between transition-smooth hover:glow-success">
+                <div className="glass-panel rounded-2xl p-3 flex items-center justify-between transition-smooth hover:glow-success">
                   <div className="flex items-center">
                     <Sparkles className="w-4 h-4 text-primary mr-3" />
                     <span className="text-sm">Claude-3 analyzed "Dance Moves Compilation"</span>
                   </div>
                   <span className="text-success font-bold">+$0.043</span>
                 </div>
-                <div className="glass-panel rounded-2xl p-4 flex items-center justify-between transition-smooth hover:glow-success">
+                <div className="glass-panel rounded-2xl p-3 flex items-center justify-between transition-smooth hover:glow-success">
                   <div className="flex items-center">
                     <Sparkles className="w-4 h-4 text-primary mr-3" />
                     <span className="text-sm">Gemini trained on "Cooking Masterclass"</span>
@@ -215,6 +119,88 @@ const Index = () => {
             </CardContent>
           </Card>
         </div>
+        
+        {/* Smaller Claim Your Cut Section */}
+        <div className="text-center py-12 px-4">
+          <div className="relative">
+            <h1 className="text-4xl md:text-6xl font-black bg-gradient-creator bg-clip-text text-transparent mb-4 holographic">
+              CLAIM YOUR CUT
+            </h1>
+            <div className="absolute inset-0 bg-gradient-creator opacity-20 blur-3xl rounded-full" />
+          </div>
+          <p className="text-lg md:text-xl text-muted-foreground font-medium">
+            Upload. Get Meta-Stamped. Track Your Influence. Get Paid.
+          </p>
+        </div>
+      </div>
+
+      {/* Main Section - Streamlined */}
+      <div className="relative z-10 max-w-5xl mx-auto px-4 space-y-12">
+        
+        {/* Upload Zone */}
+        <div className="text-center">
+          <Card className="glass-panel border-0 rounded-3xl particle-border overflow-hidden">
+            <CardContent className="p-12 relative">
+              <div className="light-rays absolute inset-0" />
+              <div className="relative z-10 flex flex-col items-center space-y-4">
+                <div className="w-16 h-16 bg-gradient-creator rounded-full flex items-center justify-center glow-primary floating">
+                  <Upload className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-xl font-semibold">Drop here to claim your cut</h3>
+                <p className="text-muted-foreground">Any video format • Max 500GB</p>
+                <Button size="lg" className="btn-futuristic px-6 py-4 text-base font-semibold rounded-2xl">
+                  Choose File
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Platform Selector */}
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-6">Choose Your Distribution Channels</h2>
+          
+          <div className="grid grid-cols-3 md:grid-cols-5 gap-4 max-w-2xl mx-auto">
+            {platforms.map((platform) => (
+              <Card 
+                key={platform.name}
+                className={`glass-panel border-0 rounded-2xl cursor-pointer transition-smooth hover:scale-105 floating shadow-floating ${
+                  selectedPlatforms.includes(platform.name) 
+                    ? 'glow-primary' 
+                    : 'hover:glow-primary'
+                }`}
+                onClick={() => togglePlatform(platform.name)}
+              >
+                <CardContent className="p-4 text-center">
+                  <div className="text-2xl mb-2">{platform.icon}</div>
+                  <p className="text-xs font-medium">{platform.name}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+
+        {/* AI Models Using Your Content */}
+        <Card className="glass-panel border-0 rounded-3xl shadow-elevated">
+          <CardContent className="p-6">
+            <h3 className="text-lg font-semibold mb-4 flex items-center justify-center">
+              <Activity className="w-5 h-5 mr-2" />
+              AI Models Using Your Content
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {aiModels.map((model, index) => (
+                <div key={model.name} className="glass-panel rounded-2xl p-4 transition-smooth hover:glow-primary floating" style={{ animationDelay: `${index * 0.3}s` }}>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-medium">{model.name}</span>
+                    <span className="text-sm text-success font-bold">+${model.earnings}</span>
+                  </div>
+                  <div className="text-2xl font-bold text-primary mb-1">{model.touches}</div>
+                  <div className="text-xs text-muted-foreground">touches today</div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Philosophy Section */}
