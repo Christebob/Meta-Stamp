@@ -24,6 +24,7 @@ export type Database = {
           earnings: number
           id: string
           usage_type: string
+          user_id: string
         }
         Insert: {
           ai_model: string
@@ -34,6 +35,7 @@ export type Database = {
           earnings: number
           id?: string
           usage_type: string
+          user_id: string
         }
         Update: {
           ai_model?: string
@@ -44,6 +46,7 @@ export type Database = {
           earnings?: number
           id?: string
           usage_type?: string
+          user_id?: string
         }
         Relationships: [
           {
@@ -65,6 +68,7 @@ export type Database = {
           title: string | null
           total_earned: number | null
           upload_time: string | null
+          user_id: string
         }
         Insert: {
           ai_touches?: number | null
@@ -75,6 +79,7 @@ export type Database = {
           title?: string | null
           total_earned?: number | null
           upload_time?: string | null
+          user_id: string
         }
         Update: {
           ai_touches?: number | null
@@ -85,6 +90,7 @@ export type Database = {
           title?: string | null
           total_earned?: number | null
           upload_time?: string | null
+          user_id?: string
         }
         Relationships: []
       }
