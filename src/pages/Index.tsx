@@ -1,15 +1,26 @@
-import { EarningsTicker } from '@/components/EarningsTicker';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { PlatformUploader } from "@/components/PlatformUploader";
+import { EarningsTicker } from "@/components/EarningsTicker";
+import { ActivityFeed } from "@/components/ActivityFeed";
+import { useAuth } from "@/hooks/useAuth";
 import { Upload, Zap, TrendingUp, Play, Eye, DollarSign, Activity, Sparkles } from 'lucide-react';
-import { useState } from 'react';
-import { ActivityFeed } from '@/components/ActivityFeed';
-import { PlatformUploader } from '@/components/PlatformUploader';
 
 const Index = () => {
+  const { user, loading, signOut } = useAuth();
+  const navigate = useNavigate();
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [aiTouches] = useState(2847);
   const [earningsPerTouch] = useState(0.0573);
+
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate('/auth');
+    }
+  }, [user, loading, navigate]);
 
   const platforms = [
     { name: 'YouTube', icon: '▶️', color: 'text-red-500' },
@@ -33,6 +44,18 @@ const Index = () => {
     );
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-primary/5 flex items-center justify-center">
+        <div className="text-lg">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null; // Will redirect to auth
+  }
+
   return (
     <div className="min-h-screen bg-white futuristic-grid">
       {/* Ambient Background Effects */}
@@ -42,8 +65,20 @@ const Index = () => {
       <div className="relative z-10">
         <EarningsTicker userName="Chris Coyne" />
         
+        {/* User Controls */}
+        <div className="max-w-6xl mx-auto px-4 pt-8">
+          <div className="flex justify-between items-center mb-6">
+            <div className="text-sm text-muted-foreground">
+              Welcome back, {user.email}
+            </div>
+            <Button variant="outline" onClick={signOut}>
+              Sign Out
+            </Button>
+          </div>
+        </div>
+
         {/* Earnings Dashboard - Prominently Featured */}
-        <div className="max-w-6xl mx-auto px-4 pt-12 pb-8">
+        <div className="max-w-6xl mx-auto px-4 pb-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             {/* AI Touches Counter */}
             <Card className="glass-panel border-0 rounded-3xl glow-primary floating">
