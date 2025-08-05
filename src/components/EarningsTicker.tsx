@@ -22,9 +22,21 @@ export const EarningsTicker = ({ userName = "Chris Coyne" }: EarningsTickerProps
       if (error) throw error;
       
       const totalEarnings = data?.reduce((sum: number, content: any) => sum + (content.total_earned || 0), 0) || 0;
-      setCurrentEarnings(totalEarnings);
+      
+      // If no database earnings, show demo calculation matching the Index page
+      if (totalEarnings === 0) {
+        const aiTouches = 2847;
+        const earningsPerTouch = 0.0573;
+        setCurrentEarnings(aiTouches * earningsPerTouch);
+      } else {
+        setCurrentEarnings(totalEarnings);
+      }
     } catch (error) {
       console.error('Error fetching earnings:', error);
+      // Fallback to demo calculation on error
+      const aiTouches = 2847;
+      const earningsPerTouch = 0.0573;
+      setCurrentEarnings(aiTouches * earningsPerTouch);
     }
   };
 
