@@ -13,14 +13,40 @@ const Index = () => {
   const { user, loading, signOut } = useAuth();
   const navigate = useNavigate();
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
-  const [aiTouches] = useState(2847);
+  const [aiTouches, setAiTouches] = useState(2847);
   const [earningsPerTouch] = useState(0.0573);
+  const [hourlyIncrease, setHourlyIncrease] = useState(47);
 
   useEffect(() => {
     if (!loading && !user) {
       navigate('/auth');
     }
   }, [user, loading, navigate]);
+
+  // Random AI touches ticker - increases 30-60 times per hour (every 60-120 seconds)
+  useEffect(() => {
+    const scheduleNextTick = () => {
+      // Random interval between 60-120 seconds (to get 30-60 ticks per hour)
+      const randomInterval = Math.random() * 60000 + 60000; // 60-120 seconds in ms
+      
+      setTimeout(() => {
+        setAiTouches(prev => prev + 1);
+        setHourlyIncrease(prev => prev + 1);
+        scheduleNextTick(); // Schedule the next tick
+      }, randomInterval);
+    };
+
+    scheduleNextTick();
+  }, []);
+
+  // Reset hourly counter every hour
+  useEffect(() => {
+    const hourlyReset = setInterval(() => {
+      setHourlyIncrease(0);
+    }, 3600000); // Reset every hour
+
+    return () => clearInterval(hourlyReset);
+  }, []);
 
   const platforms = [
     { name: 'YouTube', icon: '▶️', color: 'text-red-500' },
@@ -90,7 +116,7 @@ const Index = () => {
                 <div className="text-4xl font-black text-primary mb-1 holographic">
                   {aiTouches.toLocaleString()}
                 </div>
-                <div className="text-xs text-muted-foreground">+47 in last hour</div>
+                <div className="text-xs text-muted-foreground">+{hourlyIncrease} in last hour</div>
               </CardContent>
             </Card>
 
