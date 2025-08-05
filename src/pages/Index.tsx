@@ -100,7 +100,7 @@ const Index = () => {
       
       {/* Top Section */}
       <div className="relative z-10">
-        <EarningsTicker userName="Chris Coyne" />
+        <EarningsTicker userName="Chris Coyne" currentEarnings={aiTouches * earningsPerTouch} />
         
         {/* User Controls */}
         <div className="max-w-6xl mx-auto px-4 pt-8">

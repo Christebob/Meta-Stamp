@@ -6,9 +6,10 @@ import { supabase } from '@/integrations/supabase/client';
 
 interface EarningsTickerProps {
   userName?: string;
+  currentEarnings?: number;
 }
 
-export const EarningsTicker = ({ userName = "Chris Coyne" }: EarningsTickerProps) => {
+export const EarningsTicker = ({ userName = "Chris Coyne", currentEarnings: propEarnings }: EarningsTickerProps) => {
   const [currentEarnings, setCurrentEarnings] = useState(0);
   const [lastNotificationAmount, setLastNotificationAmount] = useState(0);
 
@@ -40,9 +41,18 @@ export const EarningsTicker = ({ userName = "Chris Coyne" }: EarningsTickerProps
     }
   };
 
+  // Update earnings from prop or fetch from database
   useEffect(() => {
-    // Initial fetch
-    fetchEarnings();
+    if (propEarnings !== undefined) {
+      setCurrentEarnings(propEarnings);
+    } else {
+      fetchEarnings();
+    }
+  }, [propEarnings]);
+
+  useEffect(() => {
+    // Only set up database subscription if not using prop earnings
+    if (propEarnings !== undefined) return;
 
     // Set up real-time subscription to ai_usage_logs
     const channel = supabase
@@ -75,7 +85,7 @@ export const EarningsTicker = ({ userName = "Chris Coyne" }: EarningsTickerProps
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [propEarnings]);
 
   return (
     <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-2xl px-4">
