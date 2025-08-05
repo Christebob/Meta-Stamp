@@ -15,7 +15,20 @@ const Index = () => {
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [aiTouches, setAiTouches] = useState(2847);
   const [earningsPerTouch] = useState(0.0573);
-  const [recentIncreases, setRecentIncreases] = useState<number[]>([]); // Store timestamps of increases
+  
+  // Initialize with 47 fake timestamps spread over the last hour
+  const [recentIncreases, setRecentIncreases] = useState<number[]>(() => {
+    const now = Date.now();
+    const oneHourAgo = now - 60 * 60 * 1000;
+    const timestamps = [];
+    for (let i = 0; i < 47; i++) {
+      // Spread 47 timestamps randomly over the last hour
+      const randomTime = oneHourAgo + Math.random() * (60 * 60 * 1000);
+      timestamps.push(randomTime);
+    }
+    return timestamps.sort((a, b) => a - b);
+  });
+  
   const [hourlyIncrease, setHourlyIncrease] = useState(47);
 
   useEffect(() => {
