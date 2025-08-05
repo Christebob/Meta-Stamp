@@ -15,6 +15,7 @@ const Index = () => {
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [aiTouches, setAiTouches] = useState(2847);
   const [earningsPerTouch] = useState(0.0573);
+  const [recentIncreases, setRecentIncreases] = useState<number[]>([]); // Store timestamps of increases
   const [hourlyIncrease, setHourlyIncrease] = useState(47);
 
   useEffect(() => {
@@ -30,8 +31,9 @@ const Index = () => {
       const randomInterval = Math.random() * 60000 + 60000; // 60-120 seconds in ms
       
       setTimeout(() => {
+        const now = Date.now();
         setAiTouches(prev => prev + 1);
-        setHourlyIncrease(prev => prev + 1);
+        setRecentIncreases(prev => [...prev, now]);
         scheduleNextTick(); // Schedule the next tick
       }, randomInterval);
     };
@@ -39,14 +41,23 @@ const Index = () => {
     scheduleNextTick();
   }, []);
 
-  // Reset hourly counter every hour
+  // Update hourly counter every minute by filtering timestamps from last 60 minutes
   useEffect(() => {
-    const hourlyReset = setInterval(() => {
-      setHourlyIncrease(0);
-    }, 3600000); // Reset every hour
+    const updateHourlyCount = () => {
+      const oneHourAgo = Date.now() - 60 * 60 * 1000; // 60 minutes ago
+      const increasesInLastHour = recentIncreases.filter(timestamp => timestamp > oneHourAgo);
+      
+      // Also clean up old timestamps to prevent memory buildup
+      setRecentIncreases(increasesInLastHour);
+      setHourlyIncrease(increasesInLastHour.length);
+    };
 
-    return () => clearInterval(hourlyReset);
-  }, []);
+    // Update immediately and then every minute
+    updateHourlyCount();
+    const interval = setInterval(updateHourlyCount, 60000); // Update every minute
+
+    return () => clearInterval(interval);
+  }, [recentIncreases]);
 
   const platforms = [
     { name: 'YouTube', icon: '▶️', color: 'text-red-500' },
