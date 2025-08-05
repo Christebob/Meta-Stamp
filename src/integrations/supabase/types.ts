@@ -14,7 +14,80 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      ai_usage_logs: {
+        Row: {
+          ai_model: string
+          blockchain_tx: string | null
+          content_id: string | null
+          detected_at: string | null
+          duration_seconds: number | null
+          earnings: number
+          id: string
+          usage_type: string
+        }
+        Insert: {
+          ai_model: string
+          blockchain_tx?: string | null
+          content_id?: string | null
+          detected_at?: string | null
+          duration_seconds?: number | null
+          earnings: number
+          id?: string
+          usage_type: string
+        }
+        Update: {
+          ai_model?: string
+          blockchain_tx?: string | null
+          content_id?: string | null
+          detected_at?: string | null
+          duration_seconds?: number | null
+          earnings?: number
+          id?: string
+          usage_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_usage_logs_content_id_fkey"
+            columns: ["content_id"]
+            isOneToOne: false
+            referencedRelation: "content_registry"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      content_registry: {
+        Row: {
+          ai_touches: number | null
+          content_hash: string
+          creator_name: string | null
+          id: string
+          platform: string | null
+          title: string | null
+          total_earned: number | null
+          upload_time: string | null
+        }
+        Insert: {
+          ai_touches?: number | null
+          content_hash: string
+          creator_name?: string | null
+          id?: string
+          platform?: string | null
+          title?: string | null
+          total_earned?: number | null
+          upload_time?: string | null
+        }
+        Update: {
+          ai_touches?: number | null
+          content_hash?: string
+          creator_name?: string | null
+          id?: string
+          platform?: string | null
+          title?: string | null
+          total_earned?: number | null
+          upload_time?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
