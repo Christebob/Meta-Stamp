@@ -1,17 +1,12 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PlatformUploader } from "@/components/PlatformUploader";
 import { EarningsTicker } from "@/components/EarningsTicker";
 import { ActivityFeed } from "@/components/ActivityFeed";
-import { useAuth } from "@/hooks/useAuth";
 import { Upload, Zap, TrendingUp, Play, Eye, DollarSign, Activity, Sparkles } from 'lucide-react';
 
 const Index = () => {
-  const { user, loading, signOut } = useAuth();
-  const navigate = useNavigate();
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [aiTouches, setAiTouches] = useState(2847);
   const [earningsPerTouch] = useState(0.0573);
@@ -31,11 +26,6 @@ const Index = () => {
   
   const [hourlyIncrease, setHourlyIncrease] = useState(47);
 
-  useEffect(() => {
-    if (!loading && !user) {
-      navigate('/auth');
-    }
-  }, [user, loading, navigate]);
 
   // Random AI touches ticker - increases 30-60 times per hour (every 60-120 seconds)
   useEffect(() => {
@@ -94,17 +84,6 @@ const Index = () => {
     );
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-primary/5 flex items-center justify-center">
-        <div className="text-lg">Loading...</div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return null; // Will redirect to auth
-  }
 
   return (
     <div className="min-h-screen bg-white futuristic-grid">
@@ -119,11 +98,8 @@ const Index = () => {
         <div className="max-w-6xl mx-auto px-4 pt-8">
           <div className="flex justify-between items-center mb-6">
             <div className="text-sm text-muted-foreground">
-              Welcome back, {user.email}
+              Welcome back, Creator
             </div>
-            <Button variant="outline" onClick={signOut}>
-              Sign Out
-            </Button>
           </div>
         </div>
 
