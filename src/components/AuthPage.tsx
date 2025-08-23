@@ -39,47 +39,11 @@ export const AuthPage = () => {
     setLoading(true);
     setError('');
 
-    try {
-      if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        
-        if (error) {
-          if (error.message.includes('Invalid login credentials')) {
-            setError('Invalid email or password. Please check your credentials.');
-          } else {
-            setError(error.message);
-          }
-        } else {
-          toast.success('Logged in successfully!');
-        }
-      } else {
-        const redirectUrl = `${window.location.origin}/`;
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: redirectUrl
-          }
-        });
-
-        if (error) {
-          if (error.message.includes('User already registered')) {
-            setError('Account already exists. Please sign in instead.');
-          } else {
-            setError(error.message);
-          }
-        } else {
-          toast.success('Account created successfully! Please check your email for verification.');
-        }
-      }
-    } catch (err) {
-      setError('An unexpected error occurred. Please try again.');
-    } finally {
-      setLoading(false);
-    }
+    // Demo mode - just redirect to main page regardless of credentials
+    setTimeout(() => {
+      toast.success('Demo access granted!');
+      navigate('/');
+    }, 500);
   };
 
   return (
