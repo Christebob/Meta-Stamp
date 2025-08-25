@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import CreatorStudio from "./pages/CreatorStudio";
 import ContentScanner from "./pages/ContentScanner";
+import MobileVideoWatermark from "./components/MobileVideoWatermark";
 import { Layout } from "@/components/Layout";
 
 const queryClient = new QueryClient();
@@ -21,6 +22,7 @@ const App = () => (
           <Route path="/" element={<Layout><Index /></Layout>} />
           <Route path="/creator" element={<Layout><CreatorStudio /></Layout>} />
           <Route path="/scanner" element={<Layout><ContentScanner /></Layout>} />
+          <Route path="/mobile" element={<MobileVideoWatermark />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
