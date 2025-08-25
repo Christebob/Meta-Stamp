@@ -8,8 +8,8 @@ import { Upload, Zap, TrendingUp, Play, Eye, DollarSign, Activity, Sparkles } fr
 
 const Index = () => {
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
-  const [aiTouches, setAiTouches] = useState(2847);
-  const [earningsPerTouch] = useState(0.0573);
+  const [aiTouches, setAiTouches] = useState(285643);
+  const [earningsPerTouch] = useState(0.875);
   
   // Initialize with 47 fake timestamps spread over the last hour
   const [recentIncreases, setRecentIncreases] = useState<number[]>(() => {
