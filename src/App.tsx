@@ -8,6 +8,7 @@ import NotFound from "./pages/NotFound";
 import CreatorStudio from "./pages/CreatorStudio";
 import ContentScanner from "./pages/ContentScanner";
 import MobileVideoWatermark from "./components/MobileVideoWatermark";
+import DahrMannDemo from "./components/DahrMannDemo";
 import { Layout } from "@/components/Layout";
 
 const queryClient = new QueryClient();
@@ -23,6 +24,7 @@ const App = () => (
           <Route path="/creator" element={<Layout><CreatorStudio /></Layout>} />
           <Route path="/scanner" element={<Layout><ContentScanner /></Layout>} />
           <Route path="/mobile" element={<MobileVideoWatermark />} />
+          <Route path="/demo" element={<Layout><DahrMannDemo /></Layout>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
